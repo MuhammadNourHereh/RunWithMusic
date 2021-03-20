@@ -10,7 +10,7 @@
 
     <fragment
         android:id="@+id/trackingFragment"
-        android:name="com.nourtech.wordpress.runtracker.ui.fragments.TrackingFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.TrackingFragment"
         android:label="TrackingFragment" >
         <action
             android:id="@+id/action_trackingFragment_to_runFragment"
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/runFragment"
-        android:name="com.nourtech.wordpress.runtracker.ui.fragments.RunFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.RunFragment"
         android:label="RunFragment" >
         <action
             android:id="@+id/action_runFragment_to_trackingFragment"
@@ -26,15 +26,15 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.nourtech.wordpress.runtracker.ui.fragments.SettingsFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.SettingsFragment"
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/statisticsFragment"
-        android:name="com.nourtech.wordpress.runtracker.ui.fragments.StatFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.StatFragment"
         android:label="StatisticsFragment" />
     <fragment
         android:id="@+id/setupFragment"
-        android:name="com.nourtech.wordpress.runtracker.ui.fragments.SetupFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.SetupFragment"
         android:label="SetupFragment" >
         <action
             android:id="@+id/action_setupFragment_to_runFragment"

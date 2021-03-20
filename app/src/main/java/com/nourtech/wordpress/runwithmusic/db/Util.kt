@@ -1,4 +1,4 @@
-package com.nourtech.wordpress.runtracker.db
+package com.nourtech.wordpress.runwithmusic.db
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

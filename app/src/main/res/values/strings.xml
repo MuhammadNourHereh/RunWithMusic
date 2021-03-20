@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RunTracker</string>
+    <string name="app_name">Run with Music</string>
     <string name="google_maps_key">AIzaSyA6nv763s2Btr-N75sVBV2CIzx3_lJg9uM</string>
     <string name="running_app">Running App</string>
     <string name="your_runs">Your Runs</string>
