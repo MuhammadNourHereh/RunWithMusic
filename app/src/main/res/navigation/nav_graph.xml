@@ -40,4 +40,8 @@
             android:id="@+id/action_setupFragment_to_runFragment"
             app:destination="@id/runFragment" />
     </fragment><action android:id="@+id/action_global_runFragment" app:destination="@id/runFragment"/><action android:id="@+id/action_global_statFragment" app:destination="@id/statisticsFragment"/><action android:id="@+id/action_global_settingsFragment" app:destination="@id/settingsFragment"/>
+    <fragment
+        android:id="@+id/musicFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.MusicFragment"
+        android:label="MusicFragment" />
 </navigation>

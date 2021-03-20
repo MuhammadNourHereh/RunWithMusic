@@ -13,6 +13,8 @@
     <string name="_0km">0km</string>
     <string name="total_time">Total Time</string>
     <string name="_00_00_00">00:00:00</string>
+    <string name="music">Music</string>
+    <string name="welcome_nplease_enter_your_name_and_weight">Welcome!\nPlease enter your name and weight.</string>
     <string-array name="filter_options">
         <item>Date</item>
         <item>Running Time</item>

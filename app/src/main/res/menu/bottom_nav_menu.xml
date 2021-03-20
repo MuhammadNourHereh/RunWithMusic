@@ -9,6 +9,10 @@
         android:title="@string/statistics"
         android:icon="@drawable/ic_graph" />
 
+    <item  android:id="@+id/musicFragment"
+        android:title="@string/music"
+        android:icon="@drawable/ic_music"/>
+
     <item android:id="@+id/settingsFragment"
         android:title="@string/settings"
         android:icon="@drawable/ic_settings" />
