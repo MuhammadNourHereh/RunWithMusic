@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 
 class Stopwatch {
 
-
-
     private var isTimerEnabled = false
     // time stopwatch started
     private var timeStarted = 0L
@@ -29,7 +27,8 @@ class Stopwatch {
     val timeRunInSeconds = MutableLiveData<Long>()
 
     init {
-        timeStarted = System.currentTimeMillis()
+        timeRunInSeconds.postValue(0L)
+        timeRunInMillis.postValue(0L)
     }
 
     fun startTimer() {
@@ -71,6 +70,5 @@ class Stopwatch {
             previousLabsTime += currentLabTime
         }
     }
-
 
 }

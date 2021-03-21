@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.nourtech.wordpress.runwithmusic.db.RunDAO
 import com.nourtech.wordpress.runwithmusic.db.RunDB
 import com.nourtech.wordpress.runwithmusic.others.Constants.RUN_DB_NAME
+import com.nourtech.wordpress.runwithmusic.others.Stopwatch
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,9 +23,12 @@ object Modules {
         Room.databaseBuilder(app, RunDB::class.java, RUN_DB_NAME)
             .build()
 
+    @Singleton
+    @Provides
+    fun provideDoa(db: RunDB) = db.getDao()
 
     @Singleton
     @Provides
-    fun provideDoa(db: RunDB): RunDAO = db.getDao()
+    fun provideStopWatch() = Stopwatch()
 
 }
