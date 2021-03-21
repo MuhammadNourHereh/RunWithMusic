@@ -3,6 +3,7 @@ package com.nourtech.wordpress.runwithmusic.services
 import android.content.Intent
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.MutableLiveData
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
@@ -25,6 +26,11 @@ class TrackingService : LifecycleService(){
     @Inject
     lateinit var trackingNotification: TrackingNotification
 
+    var isTracking = MutableLiveData<Boolean>().also {
+        it.postValue(false)
+    }
+
+
     // receive the command from out source intent
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -34,19 +40,22 @@ class TrackingService : LifecycleService(){
                     stopwatch.startTimer()
                     startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
                     subscribeToStopwatch()
+                    isTracking.postValue(true)
                 }
 
                 ACTION_PAUSE_SERVICE -> {
                     Timber.d("Paused service")
                     stopwatch.pauseTimer()
                     trackingNotification.cancelTheNotification()
-
+                    isTracking.postValue(false)
                 }
 
                 ACTION_STOP_SERVICE -> {
                     Timber.d("Stopped service")
                     stopwatch.reset()
                     trackingNotification.cancelTheNotification()
+                    isTracking.postValue(false)
+                    stopSelf()
                 }
             }
         }
