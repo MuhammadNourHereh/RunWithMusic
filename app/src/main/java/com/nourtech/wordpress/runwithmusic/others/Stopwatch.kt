@@ -32,10 +32,11 @@ class Stopwatch {
     }
 
     fun startTimer() {
-        isTimerEnabled = true
-        if (timeStarted == 0L)
-            timeStarted = System.currentTimeMillis()
-        runTimer()
+        if (!isTimerEnabled) {
+            isTimerEnabled = true
+            runTimer()
+        }
+
     }
 
     fun pauseTimer() {
@@ -48,10 +49,14 @@ class Stopwatch {
         currentLabTime = 0L
         previousLabsTime = 0L
         lastSecondTimeStamp = 0L
+        timeRunInSeconds.postValue(0L)
+        timeRunInMillis.postValue(0L)
     }
 
     private fun runTimer() {
         CoroutineScope(Dispatchers.Main).launch {
+            timeStarted = System.currentTimeMillis()
+
             while (isTimerEnabled) {
 
                 // deference time between now and time started

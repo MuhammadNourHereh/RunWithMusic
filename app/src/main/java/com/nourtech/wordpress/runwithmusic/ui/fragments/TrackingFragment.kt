@@ -53,10 +53,12 @@ class TrackingFragment : Fragment() {
     private fun toggleRun() {
         isTimerRunning = if (isTimerRunning) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
+            binding.btnFinishRun.visibility = View.VISIBLE
             false
         }
         else {
             sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
+            binding.btnFinishRun.visibility = View.GONE
             true
         }
     }
