@@ -6,8 +6,10 @@ import androidx.lifecycle.LifecycleService
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
+import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
 import com.nourtech.wordpress.runwithmusic.others.Stopwatch
 import com.nourtech.wordpress.runwithmusic.others.TrackingNotification
+import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -30,6 +32,7 @@ class TrackingService : LifecycleService(){
                 ACTION_START_OR_RESUME_SERVICE -> {
                     Timber.d("started service")
                     stopwatch.startTimer()
+                    //startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
                     subscribeToStopwatch()
                 }
 
@@ -68,7 +71,7 @@ class TrackingService : LifecycleService(){
 
     private fun subscribeToStopwatch() {
         stopwatch.timeRunInMillis.observe(this) {
-            Timber.d("the time in millis is :$it")
+            Timber.d("the time in millis is :${TrackingUtility.getFormattedStopWatchTime(it, true)}")
         }
 
         stopwatch.timeRunInSeconds.observe(this) {

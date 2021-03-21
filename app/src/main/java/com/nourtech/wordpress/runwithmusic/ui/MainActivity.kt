@@ -1,5 +1,6 @@
 package com.nourtech.wordpress.runwithmusic.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
@@ -7,7 +8,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.databinding.ActivityMainBinding
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -35,5 +38,16 @@ class MainActivity : AppCompatActivity() {
         // setup bottom nav view
         binding.bottomNavigationView.setupWithNavController(navController)
 
+    }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navigateToTrackingFragmentIfNeeded(intent)
+        Timber.d("action_global_trackingFragment")
+    }
+    private fun navigateToTrackingFragmentIfNeeded(intent: Intent?) {
+        if (intent?.action == ACTION_SHOW_TRACKING_FRAGMENT) {
+            navController.navigate(R.id.action_global_trackingFragment)
+
+        }
     }
 }
