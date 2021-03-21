@@ -2,10 +2,10 @@ package com.nourtech.wordpress.runwithmusic.di
 
 import android.content.Context
 import androidx.room.Room
-import com.nourtech.wordpress.runwithmusic.db.RunDAO
 import com.nourtech.wordpress.runwithmusic.db.RunDB
 import com.nourtech.wordpress.runwithmusic.others.Constants.RUN_DB_NAME
 import com.nourtech.wordpress.runwithmusic.others.Stopwatch
+import com.nourtech.wordpress.runwithmusic.others.TrackingNotification
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,5 +30,10 @@ object Modules {
     @Singleton
     @Provides
     fun provideStopWatch() = Stopwatch()
+
+    @Singleton
+    @Provides
+    fun provideTrackingNotification(@ApplicationContext app: Context)
+        = TrackingNotification(app)
 
 }

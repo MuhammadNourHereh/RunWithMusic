@@ -7,6 +7,7 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Stopwatch
+import com.nourtech.wordpress.runwithmusic.others.TrackingNotification
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -19,6 +20,9 @@ class TrackingService : LifecycleService(){
     @Inject
     lateinit var stopwatch: Stopwatch
 
+    @Inject
+    lateinit var trackingNotification: TrackingNotification
+
     // receive the command from out source intent
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -27,11 +31,13 @@ class TrackingService : LifecycleService(){
                     Timber.d("started service")
                     stopwatch.startTimer()
                     subscribeToStopwatch()
+                    trackingNotification.buildNotification()
                 }
 
                 ACTION_PAUSE_SERVICE -> {
                     Timber.d("Paused service")
                     stopwatch.pauseTimer()
+                    trackingNotification.cancelTheNotification()
 
                 }
 
@@ -69,5 +75,4 @@ class TrackingService : LifecycleService(){
             Timber.d("the time in seconds is :$it")
         }
     }
-
 }
