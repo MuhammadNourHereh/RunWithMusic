@@ -31,7 +31,6 @@ class TrackingService : LifecycleService(){
                     Timber.d("started service")
                     stopwatch.startTimer()
                     subscribeToStopwatch()
-                    trackingNotification.buildNotification()
                 }
 
                 ACTION_PAUSE_SERVICE -> {
@@ -71,8 +70,10 @@ class TrackingService : LifecycleService(){
         stopwatch.timeRunInMillis.observe(this) {
             Timber.d("the time in millis is :$it")
         }
+
         stopwatch.timeRunInSeconds.observe(this) {
             Timber.d("the time in seconds is :$it")
+            trackingNotification.updateNotification(it)
         }
     }
 }
