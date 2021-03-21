@@ -32,7 +32,7 @@ class TrackingService : LifecycleService(){
                 ACTION_START_OR_RESUME_SERVICE -> {
                     Timber.d("started service")
                     stopwatch.startTimer()
-                    //startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
+                    startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
                     subscribeToStopwatch()
                 }
 
@@ -46,7 +46,7 @@ class TrackingService : LifecycleService(){
                 ACTION_STOP_SERVICE -> {
                     Timber.d("Stopped service")
                     stopwatch.reset()
-
+                    trackingNotification.cancelTheNotification()
                 }
             }
         }

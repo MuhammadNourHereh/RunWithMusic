@@ -15,6 +15,8 @@
     <string name="_00_00_00">00:00:00</string>
     <string name="music">Music</string>
     <string name="welcome_nplease_enter_your_name_and_weight">Welcome!\nPlease enter your name and weight.</string>
+    <string name="pause">pause</string>
+    <string name="_00_00_00_00">00:00:00:00</string>
     <string-array name="filter_options">
         <item>Date</item>
         <item>Running Time</item>

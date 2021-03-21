@@ -24,17 +24,17 @@ class TrackingNotification(val context: Context) {
 
     private var builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         .setAutoCancel(false)
-        //.setOngoing(true)
+        .setOngoing(true)
         .setSmallIcon(R.drawable.ic_directions_run_black_24dp)
         .setContentTitle("Running App")
-        /*.setContentIntent(PendingIntent.getActivity(
+        .setContentIntent(PendingIntent.getActivity(
             context,
             0,
             Intent(context, MainActivity::class.java).also {
                 it.action = Constants.ACTION_SHOW_TRACKING_FRAGMENT
             },
             PendingIntent.FLAG_UPDATE_CURRENT
-        ))*/
+        ))
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -53,7 +53,7 @@ class TrackingNotification(val context: Context) {
     }
 
     fun updateNotification(time: Long) {
-        val formattedTime = TrackingUtility.getFormattedStopWatchTime(time, false)
+        val formattedTime = TrackingUtility.getFormattedStopWatchTime(time * 1000L , false)
         val notification = builder
             .setContentText(formattedTime)
             .build()

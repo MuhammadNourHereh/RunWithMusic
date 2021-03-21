@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentTrackingBinding
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
@@ -54,11 +55,13 @@ class TrackingFragment : Fragment() {
         isTimerRunning = if (isTimerRunning) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
             binding.btnFinishRun.visibility = View.VISIBLE
+            binding.btnToggleRun.text = getString(R.string.start)
             false
         }
         else {
             sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
             binding.btnFinishRun.visibility = View.GONE
+            binding.btnToggleRun.text = getString(R.string.pause)
             true
         }
     }
