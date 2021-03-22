@@ -1,6 +1,7 @@
 package com.nourtech.wordpress.runwithmusic.di
 
 import android.content.Context
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.nourtech.wordpress.runwithmusic.others.TrackingNotification
 import dagger.Module
 import dagger.Provides
@@ -12,6 +13,12 @@ import dagger.hilt.android.scopes.ServiceScoped
 @Module
 @InstallIn(ServiceComponent::class)
 object ServiceModule {
+
+    @ServiceScoped
+    @Provides
+    fun provideFusedLocationProviderClient(
+            @ApplicationContext app: Context
+    ) = FusedLocationProviderClient(app)
 
     @ServiceScoped
     @Provides

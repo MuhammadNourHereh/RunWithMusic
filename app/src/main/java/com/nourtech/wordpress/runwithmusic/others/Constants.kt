@@ -19,4 +19,7 @@ object Constants {
     //
     const val ACTION_SHOW_TRACKING_FRAGMENT = "ACTION_SHOW_TRACKING_FRAGMENT"
 
+    //request permission
+    const val REQUEST_CODE_LOCATION_PERMISSION = 0
+
 }

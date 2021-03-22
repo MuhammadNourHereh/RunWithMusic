@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.gms.maps.GoogleMap
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentTrackingBinding
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
@@ -21,10 +22,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TrackingFragment : Fragment() {
     private lateinit var binding: FragmentTrackingBinding
-    private var isTimerRunning = false
+    private var isTracking = false
 
     @Inject
     lateinit var stopwatch: Stopwatch
+
+    private var map: GoogleMap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +40,15 @@ class TrackingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // persist map data
+        binding.mapView.onCreate(savedInstanceState)
+
+        binding.mapView.getMapAsync {
+            map = it
+            //addAllPolylines()
+        }
+
         // set on click listeners
         binding.apply {
             btnToggleRun.setOnClickListener {
@@ -49,10 +61,11 @@ class TrackingFragment : Fragment() {
 
         // subscribe to stopwatch
         subscribeToStopWatch()
+        subscribeToService()
 
     }
     private fun toggleRun() {
-        isTimerRunning = if (isTimerRunning) {
+        isTracking = if (isTracking) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
             binding.btnFinishRun.visibility = View.VISIBLE
             binding.btnToggleRun.text = getString(R.string.start)
@@ -80,5 +93,40 @@ class TrackingFragment : Fragment() {
             binding.tvTimer.text =
                     TrackingUtility.getFormattedStopWatchTime(it, true)
         }
+    }
+    private fun subscribeToService() {
+        TrackingService.isTracking.observe(viewLifecycleOwner) {
+            isTracking = it
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.onResume()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.mapView.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.mapView.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.onPause()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.mapView.onLowMemory()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
     }
 }

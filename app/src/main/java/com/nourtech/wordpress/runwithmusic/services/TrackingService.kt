@@ -26,8 +26,10 @@ class TrackingService : LifecycleService(){
     @Inject
     lateinit var trackingNotification: TrackingNotification
 
-    var isTracking = MutableLiveData<Boolean>().also {
-        it.postValue(false)
+    companion object {
+        var isTracking = MutableLiveData<Boolean>().also {
+            it.postValue(false)
+        }
     }
 
 
@@ -37,23 +39,23 @@ class TrackingService : LifecycleService(){
             when (it.action) {
                 ACTION_START_OR_RESUME_SERVICE -> {
                     Timber.d("started service")
+                    isTracking.postValue(true)
                     stopwatch.startTimer()
                     startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
                     subscribeToStopwatch()
-                    isTracking.postValue(true)
+
                 }
 
                 ACTION_PAUSE_SERVICE -> {
                     Timber.d("Paused service")
                     stopwatch.pauseTimer()
-                    trackingNotification.cancelTheNotification()
                     isTracking.postValue(false)
                 }
 
                 ACTION_STOP_SERVICE -> {
                     Timber.d("Stopped service")
                     stopwatch.reset()
-                    trackingNotification.cancelTheNotification()
+                    stopForeground(true)
                     isTracking.postValue(false)
                     stopSelf()
                 }
@@ -84,6 +86,7 @@ class TrackingService : LifecycleService(){
         }
 
         stopwatch.timeRunInSeconds.observe(this) {
+            if (isTracking.value!!)
             Timber.d("the time in seconds is :$it")
             trackingNotification.updateNotification(it)
         }
