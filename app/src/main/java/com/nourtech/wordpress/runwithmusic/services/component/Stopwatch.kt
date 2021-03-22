@@ -1,4 +1,4 @@
-package com.nourtech.wordpress.runwithmusic.others
+package com.nourtech.wordpress.runwithmusic.services.component
 
 import androidx.lifecycle.MutableLiveData
 import com.nourtech.wordpress.runwithmusic.others.Constants.TIMER_UPDATE_INTERVAL

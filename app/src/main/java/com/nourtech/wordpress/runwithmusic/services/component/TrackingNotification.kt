@@ -1,4 +1,4 @@
-package com.nourtech.wordpress.runwithmusic.others
+package com.nourtech.wordpress.runwithmusic.services.component
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -11,9 +11,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.nourtech.wordpress.runwithmusic.R
+import com.nourtech.wordpress.runwithmusic.others.Constants
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_CHANNEL_ID
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_CHANNEL_NAME
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
+import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
 import com.nourtech.wordpress.runwithmusic.ui.MainActivity
 import timber.log.Timber
 
@@ -53,7 +55,7 @@ class TrackingNotification(val context: Context) {
     }
 
     fun updateNotification(time: Long) {
-        val formattedTime = TrackingUtility.getFormattedStopWatchTime(time * 1000L , false)
+        val formattedTime = TrackingUtility.getFormattedStopWatchTime(time * 1000L, false)
         val notification = builder
             .setContentText(formattedTime)
             .build()

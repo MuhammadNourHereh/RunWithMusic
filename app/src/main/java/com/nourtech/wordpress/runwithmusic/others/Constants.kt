@@ -22,4 +22,8 @@ object Constants {
     //request permission
     const val REQUEST_CODE_LOCATION_PERMISSION = 0
 
+    // location const
+    const val LOCATION_UPDATE_INTERVAL = 5000L
+    const val FASTEST_LOCATION_INTERVAL = 2000L
+
 }

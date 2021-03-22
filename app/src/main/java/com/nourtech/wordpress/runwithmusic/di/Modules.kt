@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.nourtech.wordpress.runwithmusic.db.RunDB
 import com.nourtech.wordpress.runwithmusic.others.Constants.RUN_DB_NAME
-import com.nourtech.wordpress.runwithmusic.others.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.component.Stopwatch
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

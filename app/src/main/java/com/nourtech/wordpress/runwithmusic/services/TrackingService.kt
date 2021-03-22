@@ -8,9 +8,9 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
-import com.nourtech.wordpress.runwithmusic.others.Stopwatch
-import com.nourtech.wordpress.runwithmusic.others.TrackingNotification
-import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
+import com.nourtech.wordpress.runwithmusic.services.component.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.component.TrackingNotification
+import com.nourtech.wordpress.runwithmusic.services.component.map.TrackingMap
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,44 +26,66 @@ class TrackingService : LifecycleService(){
     @Inject
     lateinit var trackingNotification: TrackingNotification
 
+    @Inject
+    lateinit var trackingMap: TrackingMap
+
     companion object {
         var isTracking = MutableLiveData<Boolean>().also {
             it.postValue(false)
         }
     }
 
-
     // receive the command from out source intent
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when (it.action) {
                 ACTION_START_OR_RESUME_SERVICE -> {
-                    Timber.d("started service")
-                    isTracking.postValue(true)
-                    stopwatch.startTimer()
-                    startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
-                    subscribeToStopwatch()
-
+                    onStart()
                 }
 
                 ACTION_PAUSE_SERVICE -> {
-                    Timber.d("Paused service")
-                    stopwatch.pauseTimer()
-                    isTracking.postValue(false)
+                    onPause()
                 }
 
                 ACTION_STOP_SERVICE -> {
-                    Timber.d("Stopped service")
-                    stopwatch.reset()
-                    stopForeground(true)
-                    isTracking.postValue(false)
-                    stopSelf()
+                    onStop()
                 }
             }
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
+    private fun onStart() {
+        Timber.d("started service")
+        isTracking.postValue(true)
+        stopwatch.startTimer()
+        startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
+        subscribeToStopwatch()
+        trackingMap.startTracking()
+    }
+    private fun onPause() {
+        Timber.d("Paused service")
+        isTracking.postValue(false)
+
+        stopwatch.pauseTimer()
+        trackingMap.stopTracking()
+    }
+    private fun onStop() {
+        Timber.d("Stopped service")
+        isTracking.postValue(false)
+        stopwatch.reset()
+        stopForeground(true)
+        trackingMap.stopTracking()
+        stopSelf()
+    }
+
+    private fun subscribeToStopwatch() {
+        stopwatch.timeRunInSeconds.observe(this) {
+            if (isTracking.value!!)
+                Timber.d("the time in seconds is :$it")
+            trackingNotification.updateNotification(it)
+        }
+    }
     // this service don't provide binding
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
@@ -80,15 +102,5 @@ class TrackingService : LifecycleService(){
         super.onDestroy()
     }
 
-    private fun subscribeToStopwatch() {
-        stopwatch.timeRunInMillis.observe(this) {
-            Timber.d("the time in millis is :${TrackingUtility.getFormattedStopWatchTime(it, true)}")
-        }
 
-        stopwatch.timeRunInSeconds.observe(this) {
-            if (isTracking.value!!)
-            Timber.d("the time in seconds is :$it")
-            trackingNotification.updateNotification(it)
-        }
-    }
 }

@@ -12,7 +12,7 @@ import com.nourtech.wordpress.runwithmusic.databinding.FragmentTrackingBinding
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
-import com.nourtech.wordpress.runwithmusic.others.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.component.Stopwatch
 import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
 import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import dagger.hilt.android.AndroidEntryPoint
