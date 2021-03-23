@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.nourtech.wordpress.runwithmusic.db.RunDB
 import com.nourtech.wordpress.runwithmusic.others.Constants.RUN_DB_NAME
-import com.nourtech.wordpress.runwithmusic.services.component.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,5 +30,10 @@ object Modules {
     @Singleton
     @Provides
     fun provideStopWatch() = Stopwatch()
+
+    @Singleton
+    @Provides
+    fun provideTrackingMap(@ApplicationContext app: Context)
+            = TrackingMap(app)
 
 }

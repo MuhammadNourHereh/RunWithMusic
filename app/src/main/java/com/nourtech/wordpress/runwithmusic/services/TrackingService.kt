@@ -8,9 +8,9 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
-import com.nourtech.wordpress.runwithmusic.services.component.Stopwatch
-import com.nourtech.wordpress.runwithmusic.services.component.TrackingNotification
-import com.nourtech.wordpress.runwithmusic.services.component.map.TrackingMap
+import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
+import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -51,6 +51,7 @@ class TrackingService : LifecycleService(){
                     onStop()
                 }
             }
+
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -66,7 +67,6 @@ class TrackingService : LifecycleService(){
     private fun onPause() {
         Timber.d("Paused service")
         isTracking.postValue(false)
-
         stopwatch.pauseTimer()
         trackingMap.stopTracking()
     }

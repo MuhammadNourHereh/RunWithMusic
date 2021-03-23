@@ -6,15 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.gms.maps.GoogleMap
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentTrackingBinding
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
-import com.nourtech.wordpress.runwithmusic.services.component.Stopwatch
 import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
 import com.nourtech.wordpress.runwithmusic.services.TrackingService
+import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
+import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,12 +27,13 @@ class TrackingFragment : Fragment() {
     @Inject
     lateinit var stopwatch: Stopwatch
 
-    private var map: GoogleMap? = null
+    @Inject
+    lateinit var trackingMap: TrackingMap
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         binding = FragmentTrackingBinding.inflate(inflater, container, false)
         return binding.root
@@ -42,23 +43,23 @@ class TrackingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // persist map data
-        binding.mapView.onCreate(savedInstanceState)
-
-        binding.mapView.getMapAsync {
-            map = it
-            //addAllPolylines()
-        }
-
-        // set on click listeners
         binding.apply {
+            mapView.onCreate(savedInstanceState)
+
+            mapView.getMapAsync {
+                trackingMap.setGoogleMap(it)
+                trackingMap.addAllPolylines()
+            }
+
+            // set on click listeners
             btnToggleRun.setOnClickListener {
                 toggleRun()
             }
             btnFinishRun.setOnClickListener {
                 stopRun()
             }
-        }
 
+        }
         // subscribe to stopwatch
         subscribeToStopWatch()
         subscribeToService()
@@ -85,6 +86,7 @@ class TrackingFragment : Fragment() {
     private fun sendCommandToService(action: String) =
             Intent(requireContext(), TrackingService::class.java).also {
                 it.action = action
+
                 requireContext().startService(it)
             }
 
@@ -94,6 +96,7 @@ class TrackingFragment : Fragment() {
                     TrackingUtility.getFormattedStopWatchTime(it, true)
         }
     }
+
     private fun subscribeToService() {
         TrackingService.isTracking.observe(viewLifecycleOwner) {
             isTracking = it

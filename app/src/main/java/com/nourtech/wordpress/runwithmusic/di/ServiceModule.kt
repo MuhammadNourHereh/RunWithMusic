@@ -1,8 +1,8 @@
 package com.nourtech.wordpress.runwithmusic.di
 
 import android.content.Context
-import com.nourtech.wordpress.runwithmusic.services.component.TrackingNotification
-import com.nourtech.wordpress.runwithmusic.services.component.map.TrackingMap
+import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
+import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,8 +19,6 @@ object ServiceModule {
     fun provideTrackingNotification(@ApplicationContext app: Context)
             = TrackingNotification(app)
 
-    @ServiceScoped
-    @Provides
-    fun provideTrackingMap(@ApplicationContext app: Context)
-            = TrackingMap(app)
+
+
 }

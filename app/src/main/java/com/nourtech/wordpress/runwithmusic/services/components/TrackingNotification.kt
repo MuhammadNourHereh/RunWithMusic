@@ -1,4 +1,4 @@
-package com.nourtech.wordpress.runwithmusic.services.component
+package com.nourtech.wordpress.runwithmusic.services.components
 
 import android.app.Notification
 import android.app.NotificationChannel

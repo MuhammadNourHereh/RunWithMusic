@@ -1,4 +1,4 @@
-package com.nourtech.wordpress.runwithmusic.services.component
+package com.nourtech.wordpress.runwithmusic.services.components
 
 import androidx.lifecycle.MutableLiveData
 import com.nourtech.wordpress.runwithmusic.others.Constants.TIMER_UPDATE_INTERVAL
@@ -36,7 +36,6 @@ class Stopwatch {
             isTimerEnabled = true
             runTimer()
         }
-
     }
 
     fun pauseTimer() {
