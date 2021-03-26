@@ -11,107 +11,34 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.LatLng
 import com.nourtech.wordpress.runwithmusic.others.Constants.FASTEST_LOCATION_INTERVAL
 import com.nourtech.wordpress.runwithmusic.others.Constants.LOCATION_UPDATE_INTERVAL
-import com.nourtech.wordpress.runwithmusic.others.Constants.MAP_ZOOM
-import com.nourtech.wordpress.runwithmusic.others.Constants.POLYLINE_COLOR
-import com.nourtech.wordpress.runwithmusic.others.Constants.POLYLINE_WIDTH
 import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
+import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import timber.log.Timber
 
 
 class TrackingMap(val app: Context) {
 
-    private val mPath = MutableLiveData<Path>()
-    val path: LiveData<Path>
-        get() = mPath
 
     private var isTracking = false
-    private var map: GoogleMap? = null
     private val fusedLocationProviderClient = FusedLocationProviderClient(app)
+    companion object {
+        private val mLatestLatLng = MutableLiveData<LatLng>()
+        val latestLatLng: LiveData<LatLng>
+            get() = mLatestLatLng
+    }
+
     init {
-        mPath.postValue(Path())
+        mLatestLatLng.postValue(LatLng(0.0, 0.0))
     }
 
-    fun setGoogleMap(googleMap: GoogleMap) {
-        map = googleMap
-    }
-
-    fun startTracking() {
-        isTracking = true
-        updateLocationTracking(isTracking)
-
-    }
-
-    fun stopTracking() {
-        isTracking = false
+    fun toggleTracking(isTracking: Boolean) {
+        this.isTracking = isTracking
         updateLocationTracking(isTracking)
     }
 
-
-    private fun onLocationReceived(location: Location) {
-        mPath.value?.addPathPoint(location)
-        moveCameraToUser()
-        addLatestPolyline()
-        Timber.d("NEW LOCATION: ${location.latitude}, ${location.longitude}")
-    }
-
-    /* keep the camera focus on the path */
-    private fun moveCameraToUser() {
-        if (mPath.value!!.isEmpty()) {
-            map?.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                            mPath.value!!.last(),
-                            MAP_ZOOM
-                    )
-            )
-        }
-    }
-    /* add a new poly line */
-    private fun addLatestPolyline() {
-        if (mPath.value!!.hasAtLeastTowPoints()) {
-            val preLastLatLng = mPath.value!!.getPreLastLatLng()
-            val lastLatLng = mPath.value!!.getLastLatLng()
-            val polyLineOptions = PolylineOptions()
-                    .color(POLYLINE_COLOR)
-                    .width(POLYLINE_WIDTH)
-                    .add(preLastLatLng)
-                    .add(lastLatLng)
-            map?.addPolyline(polyLineOptions)
-        }
-    }
-
-        /* redraw all polylines after rotation */
-         fun addAllPolylines() {
-            for (polyline in mPath.value!!.getPolylines()) {
-                val polyLineOptions = PolylineOptions()
-                        .color(POLYLINE_COLOR)
-                        .width(POLYLINE_WIDTH)
-                        .addAll(polyline)
-                map?.addPolyline(polyLineOptions)
-            }
-        }
-
-/*
-        private fun zoomToSeeWholeTrack() {
-            val bounds = LatLngBounds.builder()
-            for (polyline in pathPoints)
-                for (pos in polyline) {
-                    bounds.include(pos)
-                }
-            map?.moveCamera(
-                    CameraUpdateFactory.newLatLngBounds(
-                            bounds.build(),
-                            binding.mapView.width,
-                            binding.mapView.height,
-                            (binding.mapView.height * 0.05F).toInt()
-                    )
-            )
-        }
-    */
     @SuppressLint("MissingPermission")
     private fun updateLocationTracking(isTracking: Boolean) {
         if (isTracking) {
@@ -144,4 +71,10 @@ class TrackingMap(val app: Context) {
             }
         }
     }
+
+    private fun onLocationReceived(location: Location) {
+        Timber.d("NEW LOCATION: ${location.latitude}, ${location.longitude}")
+        mLatestLatLng.postValue(LatLng(location.latitude, location.longitude))
+    }
+
 }

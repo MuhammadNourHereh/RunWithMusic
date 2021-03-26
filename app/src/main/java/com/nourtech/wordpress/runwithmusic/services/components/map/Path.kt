@@ -1,6 +1,5 @@
 package com.nourtech.wordpress.runwithmusic.services.components.map
 
-import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 
 typealias Polyline = MutableList<LatLng>
@@ -8,24 +7,14 @@ typealias Polylines = MutableList<Polyline>
 
 class Path {
 
-    private var polylines : Polylines = mutableListOf(mutableListOf())
+    private var polylines: Polylines = mutableListOf(mutableListOf())
 
-    fun addPathPoint(location: Location?) {
-        location?.let {
-            val pos = LatLng(location.latitude, location.longitude)
-            polylines.apply {
-                last().add(pos)
-            }
-        }
+    fun addPathPoint(latLng: LatLng) {
+        polylines.last().add(latLng)
     }
-    fun isEmpty(): Boolean{
+    fun isEmpty(): Boolean {
         return polylines.isNotEmpty() && polylines.last().isNotEmpty()
     }
-    fun last(): LatLng{
-        return polylines.last().last()
-    }
-
-
     fun addEmptyPolyline() = polylines.apply {
         add(mutableListOf())
     }

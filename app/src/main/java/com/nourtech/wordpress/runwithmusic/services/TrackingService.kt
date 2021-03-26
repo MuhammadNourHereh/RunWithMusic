@@ -61,21 +61,18 @@ class TrackingService : LifecycleService(){
         isTracking.postValue(true)
         stopwatch.startTimer()
         startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
-        subscribeToStopwatch()
-        trackingMap.startTracking()
+
     }
     private fun onPause() {
         Timber.d("Paused service")
         isTracking.postValue(false)
         stopwatch.pauseTimer()
-        trackingMap.stopTracking()
     }
     private fun onStop() {
         Timber.d("Stopped service")
         isTracking.postValue(false)
         stopwatch.reset()
         stopForeground(true)
-        trackingMap.stopTracking()
         stopSelf()
     }
 
@@ -86,6 +83,13 @@ class TrackingService : LifecycleService(){
             trackingNotification.updateNotification(it)
         }
     }
+
+    private fun subscribeToIsTracking() {
+        isTracking.observe(this) {
+            trackingMap.toggleTracking(it)
+        }
+    }
+
     // this service don't provide binding
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
@@ -94,6 +98,8 @@ class TrackingService : LifecycleService(){
 
     override fun onCreate() {
         Timber.d("the service has been created")
+        subscribeToStopwatch()
+        subscribeToIsTracking()
         super.onCreate()
     }
 
