@@ -134,7 +134,6 @@ class TrackingFragment : Fragment() {
     private fun sendCommandToService(action: String) =
             Intent(requireContext(), TrackingService::class.java).also {
                 it.action = action
-
                 requireContext().startService(it)
             }
 

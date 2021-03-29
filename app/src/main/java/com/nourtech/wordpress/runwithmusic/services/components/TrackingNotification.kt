@@ -1,5 +1,6 @@
 package com.nourtech.wordpress.runwithmusic.services.components
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,31 +13,35 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.others.Constants
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_RESUME_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_CHANNEL_ID
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_CHANNEL_NAME
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
 import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
+import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import com.nourtech.wordpress.runwithmusic.ui.MainActivity
 import timber.log.Timber
 
 class TrackingNotification(val context: Context) {
 
     private var notificationManagerCompat: NotificationManagerCompat =
-        NotificationManagerCompat.from(context)
+            NotificationManagerCompat.from(context)
 
     private var builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-        .setAutoCancel(false)
-        .setOngoing(true)
-        .setSmallIcon(R.drawable.ic_directions_run_black_24dp)
-        .setContentTitle("Running App")
-        .setContentIntent(PendingIntent.getActivity(
-            context,
-            0,
-            Intent(context, MainActivity::class.java).also {
-                it.action = Constants.ACTION_SHOW_TRACKING_FRAGMENT
-            },
-            PendingIntent.FLAG_UPDATE_CURRENT
-        ))
+            .setAutoCancel(false)
+            .setOngoing(true)
+            .setSmallIcon(R.drawable.ic_directions_run_black_24dp)
+            .setContentTitle("Running App")
+            .setContentIntent(PendingIntent.getActivity(
+                    context,
+                    0,
+                    Intent(context, MainActivity::class.java).also {
+                        it.action = Constants.ACTION_SHOW_TRACKING_FRAGMENT
+                    },
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            ))
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -70,6 +75,24 @@ class TrackingNotification(val context: Context) {
 
     fun getNotification(): Notification {
         return builder.build()
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun updateAction(musicOn: Boolean) {
+        builder.mActions.clear()
+        val icon = if (musicOn) R.drawable.ic_pause_black_24dp else R.drawable.ic_play
+        val text = if (musicOn) "pause" else "play"
+        val action = if (musicOn) ACTION_PAUSE_MUSIC else ACTION_RESUME_MUSIC
+        val requestCode = if (musicOn) 1 else 2
+        val notification = builder.addAction(icon,
+                text,
+                PendingIntent.getService(context, requestCode,
+                        Intent(context, TrackingService::class.java).also {
+                            it.action = action
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )).build()
+        notificationManagerCompat.notify(NOTIFICATION_ID, notification)
     }
 
 }

@@ -40,7 +40,6 @@ class MusicFragment: Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // set up recycler view
@@ -52,7 +51,6 @@ class MusicFragment: Fragment() {
 
 
     }
-
 
     private fun getPermissions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)

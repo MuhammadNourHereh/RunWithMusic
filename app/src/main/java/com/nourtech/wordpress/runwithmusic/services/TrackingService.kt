@@ -1,12 +1,17 @@
 package com.nourtech.wordpress.runwithmusic.services
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_RESUME_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
+import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_SONG_PATH
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
 import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
@@ -29,6 +34,8 @@ class TrackingService : LifecycleService(){
     @Inject
     lateinit var trackingMap: TrackingMap
 
+    private val mediaPlayer = MediaPlayer()
+
     companion object {
         var isTracking = MutableLiveData<Boolean>().also {
             it.postValue(false)
@@ -49,6 +56,18 @@ class TrackingService : LifecycleService(){
 
                 ACTION_STOP_SERVICE -> {
                     onStop()
+                }
+                ACTION_START_MUSIC -> {
+                    it.getStringExtra(CURRENT_SONG_PATH)?.let { it1 -> setSource(it1) }
+                }
+                ACTION_RESUME_MUSIC -> {
+                    playMusic()
+                }
+                ACTION_PAUSE_MUSIC -> {
+                    pauseMusic()
+                }
+                else -> {
+
                 }
             }
 
@@ -98,14 +117,44 @@ class TrackingService : LifecycleService(){
 
     override fun onCreate() {
         Timber.d("the service has been created")
-        subscribeToStopwatch()
-        subscribeToIsTracking()
+        isTracking.postValue(false)
+        ////subscribeToStopwatch()
+        /////subscribeToIsTracking()
         super.onCreate()
+        startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
     }
 
     override fun onDestroy() {
         Timber.d("the service has been destroyed")
         super.onDestroy()
+    }
+
+
+    private fun setSource(src: String) {
+        try {
+            if (mediaPlayer.isPlaying)
+                mediaPlayer.reset()
+            mediaPlayer.apply {
+                setDataSource(src)
+                prepare()
+                isLooping = false
+                playMusic()
+            }
+            trackingNotification.updateAction(true)
+        } catch (e: IllegalStateException) {
+            mediaPlayer.reset()
+        }
+    }
+    private fun playMusic() {
+        if (!mediaPlayer.isPlaying)
+            mediaPlayer.start()
+        trackingNotification.updateAction(true)
+    }
+
+    private fun pauseMusic() {
+        if (mediaPlayer.isPlaying)
+            mediaPlayer.pause()
+        trackingNotification.updateAction(false)
     }
 
 

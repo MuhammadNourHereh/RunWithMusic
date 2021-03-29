@@ -13,6 +13,12 @@ object Constants {
     const val ACTION_PAUSE_SERVICE = "ACTION_PAUSE_SERVICE"
     const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
 
+    // service music commands
+    const val ACTION_START_MUSIC = "ACTION_START_MUSIC"
+    const val ACTION_PAUSE_MUSIC = "ACTION_PAUSE_MUSIC"
+    const val CURRENT_SONG_PATH = "CURRENT_SONG_PATH"
+    const val ACTION_RESUME_MUSIC = "ACTION_RESUME_MUSIC"
+
     //notification const
     const val NOTIFICATION_CHANNEL_ID = "tracking_channel"
     const val NOTIFICATION_CHANNEL_NAME = "Tracking"
