@@ -122,6 +122,9 @@ class TrackingService : LifecycleService(){
         /////subscribeToIsTracking()
         super.onCreate()
         startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
+        mediaPlayer.setOnCompletionListener {
+            trackingNotification.updateAction(false)
+        }
     }
 
     override fun onDestroy() {
@@ -131,24 +134,25 @@ class TrackingService : LifecycleService(){
 
 
     private fun setSource(src: String) {
-        try {
-            if (mediaPlayer.isPlaying)
-                mediaPlayer.reset()
+
+            mediaPlayer.reset()
             mediaPlayer.apply {
                 setDataSource(src)
-                prepare()
-                isLooping = false
-                playMusic()
+                isLooping = true
+                prepareAsync()
+                setOnPreparedListener {
+                    playMusic()
+                }
             }
+
             trackingNotification.updateAction(true)
-        } catch (e: IllegalStateException) {
-            mediaPlayer.reset()
-        }
+
     }
     private fun playMusic() {
         if (!mediaPlayer.isPlaying)
             mediaPlayer.start()
         trackingNotification.updateAction(true)
+
     }
 
     private fun pauseMusic() {
