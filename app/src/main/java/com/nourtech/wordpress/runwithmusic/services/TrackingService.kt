@@ -3,6 +3,7 @@ package com.nourtech.wordpress.runwithmusic.services
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.IBinder
+import android.provider.MediaStore
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_MUSIC
@@ -124,6 +125,7 @@ class TrackingService : LifecycleService(){
         startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
         mediaPlayer.setOnCompletionListener {
             trackingNotification.updateAction(false)
+            stopForeground(true)
         }
     }
 
@@ -138,7 +140,7 @@ class TrackingService : LifecycleService(){
             mediaPlayer.reset()
             mediaPlayer.apply {
                 setDataSource(src)
-                isLooping = true
+                isLooping = false
                 prepareAsync()
                 setOnPreparedListener {
                     playMusic()
@@ -160,6 +162,5 @@ class TrackingService : LifecycleService(){
             mediaPlayer.pause()
         trackingNotification.updateAction(false)
     }
-
 
 }

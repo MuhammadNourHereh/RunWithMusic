@@ -69,7 +69,6 @@ class TrackingNotification(val context: Context) {
     }
 
     fun cancelTheNotification() {
-        val notificationManagerCompat = NotificationManagerCompat.from(context)
         notificationManagerCompat.cancel(NOTIFICATION_ID)
     }
 
