@@ -16,8 +16,12 @@ object Constants {
     // service music commands
     const val ACTION_START_MUSIC = "ACTION_START_MUSIC"
     const val ACTION_PAUSE_MUSIC = "ACTION_PAUSE_MUSIC"
-    const val CURRENT_SONG_PATH = "CURRENT_SONG_PATH"
     const val ACTION_RESUME_MUSIC = "ACTION_RESUME_MUSIC"
+    const val ACTION_PREVIOUS_SONG = "ACTION_PREVIOUS_SONG"
+    const val ACTION_NEXT_SONG = "ACTION_NEXT_SONG"
+
+    const val CURRENT_SONG_PATH = "CURRENT_SONG_PATH"
+    const val CURRENT_PLAYLIST = "CURRENT_PLAYLIST"
 
     //notification const
     const val NOTIFICATION_CHANNEL_ID = "tracking_channel"

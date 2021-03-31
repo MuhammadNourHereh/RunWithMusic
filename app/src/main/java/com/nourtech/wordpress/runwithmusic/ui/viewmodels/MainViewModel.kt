@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repo: MainRepository): ViewModel()  {
+class MainViewModel @Inject constructor(val repo: MainRepository): ViewModel()  {
 
     var map: GoogleMap? = null
     private val mPath = MutableLiveData<Path>()

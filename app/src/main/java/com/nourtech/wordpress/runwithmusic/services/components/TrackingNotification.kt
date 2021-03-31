@@ -13,9 +13,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.others.Constants
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_NEXT_SONG
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PREVIOUS_SONG
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_RESUME_MUSIC
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_CHANNEL_ID
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_CHANNEL_NAME
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
@@ -78,20 +79,36 @@ class TrackingNotification(val context: Context) {
 
     @SuppressLint("RestrictedApi")
     fun updateAction(musicOn: Boolean) {
+
         builder.mActions.clear()
         val icon = if (musicOn) R.drawable.ic_pause_black_24dp else R.drawable.ic_play
-        val text = if (musicOn) "pause" else "play"
         val action = if (musicOn) ACTION_PAUSE_MUSIC else ACTION_RESUME_MUSIC
         val requestCode = if (musicOn) 1 else 2
-        val notification = builder.addAction(icon,
-                text,
+
+        val notification = builder.addAction(R.drawable.ic_skip_previous_white_24dp,
+                "",
+                PendingIntent.getService(context, 3,
+                        Intent(context, TrackingService::class.java).also {
+                            it.action = ACTION_PREVIOUS_SONG
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )).addAction(icon,
+                "",
                 PendingIntent.getService(context, requestCode,
                         Intent(context, TrackingService::class.java).also {
                             it.action = action
                         },
                         PendingIntent.FLAG_UPDATE_CURRENT
+                )).addAction(R.drawable.ic_skip_next_white_24dp,
+                "",
+                PendingIntent.getService(context, 4,
+                        Intent(context, TrackingService::class.java).also {
+                            it.action = ACTION_NEXT_SONG
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT
                 )).build()
         notificationManagerCompat.notify(NOTIFICATION_ID, notification)
+
     }
 
 }

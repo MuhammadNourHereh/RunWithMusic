@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.adapters.MusicListAdapter
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentMusicBinding
 import com.nourtech.wordpress.runwithmusic.others.Song
@@ -22,6 +23,7 @@ class MusicFragment: Fragment() {
 
     private lateinit var binding: FragmentMusicBinding
     private val viewModel: MusicViewModel by viewModels()
+    private var playList = false
 
     @Inject
     lateinit var songList: List<Song>
@@ -44,12 +46,22 @@ class MusicFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // set up recycler view
 
-            binding.recyclerviewMusic.apply {
-                adapter = MusicListAdapter(songList)
-                layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerviewMusic.apply {
+            adapter = MusicListAdapter(songList)
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+
+        binding.icPlaylist.setOnClickListener {
+            playList = if (playList) {
+                (binding.recyclerviewMusic.adapter as MusicListAdapter).switchToAllList()
+                binding.icPlaylist.setImageResource(R.drawable.ic_queue_music_48px)
+                false
+            } else {
+                (binding.recyclerviewMusic.adapter as MusicListAdapter).switchToPlayList()
+                binding.icPlaylist.setImageResource(R.drawable.ic_playlist_add_48px)
+                true
             }
-
-
+        }
     }
 
     private fun getPermissions() {

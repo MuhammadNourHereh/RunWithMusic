@@ -1,15 +1,26 @@
 package com.nourtech.wordpress.runwithmusic.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nourtech.wordpress.runwithmusic.others.Song
+import timber.log.Timber
+import java.io.Serializable
 
-@Entity(tableName = "running_table")
-data class Playlist(var songs: MutableList<Song>) {
+
+class Playlist: Serializable  {
+
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null
 
-    private var cur = 0
+
+    var songs: MutableList<Song> = mutableListOf()
+
+    var cur = 0
+
+    var state :Loop = Loop.NULL
+
+
 
     fun next() {
         if (songs.isEmpty())
@@ -39,10 +50,19 @@ data class Playlist(var songs: MutableList<Song>) {
 
     fun add(song: Song) {
         songs.add(song)
+        Timber.v("song  ${song.title} is added")
     }
 
     fun remove(song: Song) {
         // todo fix cur
         songs.remove(song)
     }
+
+    fun isEmpty(): Boolean {
+        return songs.isEmpty()
+    }
+    enum class Loop{
+        ALL, CURRENT, NULL
+    }
 }
+

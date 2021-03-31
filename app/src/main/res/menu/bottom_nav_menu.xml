@@ -13,6 +13,10 @@
         android:title="@string/music"
         android:icon="@drawable/ic_music"/>
 
+    <item  android:id="@+id/playlistsFragment"
+        android:title="@string/playlists"
+        android:icon="@drawable/ic_queue_music_48px"/>
+
     <item android:id="@+id/settingsFragment"
         android:title="@string/settings"
         android:icon="@drawable/ic_settings" />

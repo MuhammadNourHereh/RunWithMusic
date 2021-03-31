@@ -3,7 +3,7 @@ package com.nourtech.wordpress.runwithmusic.di
 import android.content.Context
 import android.provider.MediaStore
 import androidx.room.Room
-import com.nourtech.wordpress.runwithmusic.db.RunDB
+import com.nourtech.wordpress.runwithmusic.db.DataBase
 import com.nourtech.wordpress.runwithmusic.others.Constants.RUN_DB_NAME
 import com.nourtech.wordpress.runwithmusic.others.Song
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
@@ -21,13 +21,17 @@ object Modules {
 
     @Singleton
     @Provides
-    fun provideDatabase(@ApplicationContext app: Context): RunDB =
-        Room.databaseBuilder(app, RunDB::class.java, RUN_DB_NAME)
+    fun provideDatabase(@ApplicationContext app: Context): DataBase =
+        Room.databaseBuilder(app, DataBase::class.java, RUN_DB_NAME)
             .build()
 
     @Singleton
     @Provides
-    fun provideDoa(db: RunDB) = db.getDao()
+    fun provideRunDoa(db: DataBase) = db.getRunDao()
+
+    @Singleton
+    @Provides
+    fun providePlaylistsDoa(db: DataBase) = db.getPlaylistsDAO()
 
     @Singleton
     @Provides
