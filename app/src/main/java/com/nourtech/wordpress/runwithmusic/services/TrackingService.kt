@@ -5,7 +5,6 @@ import android.media.MediaPlayer
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
-import com.nourtech.wordpress.runwithmusic.db.Playlist
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_NEXT_SONG
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
@@ -17,6 +16,7 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_SONG_PATH
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
+import com.nourtech.wordpress.runwithmusic.others.Playlist
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
 import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
 import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
@@ -39,7 +39,7 @@ class TrackingService : LifecycleService(){
     lateinit var trackingMap: TrackingMap
 
     private val mediaPlayer = MediaPlayer()
-    private var curPlayList = Playlist()
+    private var curPlayList = Playlist("unnamed")
 
     companion object {
         var isTracking = MutableLiveData<Boolean>().also {
@@ -74,15 +74,21 @@ class TrackingService : LifecycleService(){
                     pauseMusic()
                 }
                 ACTION_NEXT_SONG -> {
-                    curPlayList.next()
-                    setSource(curPlayList.getCurrent().path)
-                    playMusic()
+                    if (!curPlayList.isEmpty()) {
+                        curPlayList.next()
+                        setSource(curPlayList.getCurrent().path)
+                        playMusic()
+                    } else {
+                    }
                 }
-                ACTION_PREVIOUS_SONG -> {
-                    curPlayList.previous()
-                    setSource(curPlayList.getCurrent().path)
-                    playMusic()
 
+                ACTION_PREVIOUS_SONG -> {
+                    if (!curPlayList.isEmpty()) {
+                        curPlayList.previous()
+                        setSource(curPlayList.getCurrent().path)
+                        playMusic()
+                    } else {
+                    }
                 }
                 else -> {
 
@@ -145,16 +151,16 @@ class TrackingService : LifecycleService(){
             if (curPlayList.isEmpty())
                 stopForeground(true)
             else
-                when (curPlayList.state) {
-                    Playlist.Loop.NULL -> {
+                when (state) {
+                    Loop.NULL -> {
                         stopForeground(true)
                     }
-                    Playlist.Loop.ALL -> {
+                    Loop.ALL -> {
                         curPlayList.next()
                         setSource(curPlayList.getCurrent().path)
                         mediaPlayer.start()
                     }
-                    Playlist.Loop.CURRENT -> {
+                    Loop.CURRENT -> {
                         mediaPlayer.start()
                     }
                 }
@@ -167,6 +173,11 @@ class TrackingService : LifecycleService(){
         mediaPlayer.release()
     }
 
+    var state: Loop = Loop.NULL
+
+    enum class Loop {
+        ALL, CURRENT, NULL
+    }
 
     private fun setSource(src: String) {
 
@@ -185,7 +196,6 @@ class TrackingService : LifecycleService(){
         if (!mediaPlayer.isPlaying)
             mediaPlayer.start()
         trackingNotification.updateAction(true)
-
     }
 
     private fun pauseMusic() {

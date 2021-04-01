@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 import com.nourtech.wordpress.runwithmusic.others.Song
 
 @Entity(tableName = "playlists_table")
-data class PlaylistEntity(@ColumnInfo var songs: List<Song>){
-    @PrimaryKey(autoGenerate = true)
-    var id: Int? = null
-}
+data class PlaylistEntity(@PrimaryKey(autoGenerate = true) var id: Int? = null,
+                          @ColumnInfo val name: String,
+                          @ColumnInfo val songs: List<Song>)
+
+

@@ -18,13 +18,12 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(val repo: MainRepository): ViewModel()  {
 
     var map: GoogleMap? = null
-    private val mPath = MutableLiveData<Path>()
+    private val mPath = MutableLiveData<Path>().apply {
+        postValue(Path())
+    }
     val path: LiveData<Path>
         get() = mPath
 
-    init {
-        mPath.postValue(Path())
-    }
     fun addPoint(latLng: LatLng){
         mPath.apply {
             value?.addPathPoint(latLng)

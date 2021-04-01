@@ -1,7 +1,5 @@
 package com.nourtech.wordpress.runwithmusic.db
 
-
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
@@ -14,5 +12,5 @@ interface PlaylistsDAO {
     suspend fun deletePlaylist(playlist: PlaylistEntity)
 
     @Query("SELECT * FROM playlists_table ")
-    fun getAllPlaylists(): LiveData<List<PlaylistEntity>>
+    fun getAllPlaylists(): List<PlaylistEntity>
 }

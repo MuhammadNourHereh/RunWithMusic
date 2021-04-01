@@ -1,13 +1,10 @@
-package com.nourtech.wordpress.runwithmusic
+package com.nourtech.wordpress.runwithmusic.db
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nourtech.wordpress.runwithmusic.db.DataBase
-import com.nourtech.wordpress.runwithmusic.db.Playlist
-import com.nourtech.wordpress.runwithmusic.db.PlaylistsDAO
+import com.nourtech.wordpress.runwithmusic.others.Song
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -36,8 +33,21 @@ class SimpleEntityReadWriteTest {
 
     @Test
     @Throws(Exception::class)
-     fun writeUserAndReadInList() = runBlocking {
-        val user: Playlist = Playlist()
+     fun writeAndPlaylistNameInList() = runBlocking {
+        val user = PlaylistEntity("playlist 1" ,
+                listOf(Song("title", "artist", "path")))
         playlistsDAO.insertPlaylist(user)
+        val getUser = playlistsDAO.getAllPlaylists()[0]
+        assert(getUser.name == "playlist 1") { "the test failed" }
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun writeAndReadSongInPlaylistInList() = runBlocking {
+        val user = PlaylistEntity("playlist 1" ,
+                listOf(Song("title", "artist", "path")))
+        playlistsDAO.insertPlaylist(user)
+        val getUser = playlistsDAO.getAllPlaylists()[0]
+        assert(getUser.songs[0].path == "path") { "the test failed" }
     }
 }

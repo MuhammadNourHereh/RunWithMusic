@@ -1,6 +1,5 @@
 package com.nourtech.wordpress.runwithmusic.repositories
 
-import com.nourtech.wordpress.runwithmusic.db.Playlist
 import com.nourtech.wordpress.runwithmusic.db.PlaylistEntity
 import com.nourtech.wordpress.runwithmusic.db.PlaylistsDAO
 import javax.inject.Inject

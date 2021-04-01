@@ -56,7 +56,7 @@ class TrackingFragment : Fragment() {
 
             mapView.getMapAsync {
                 viewModel.map = it
-                addAllPolylines()
+//                addAllPolylines()
             }
 
             // set on click listeners
@@ -148,7 +148,7 @@ class TrackingFragment : Fragment() {
         }
         TrackingMap.latestLatLng.observe(viewLifecycleOwner) {
             viewModel.addPoint(it)
-            viewModel.addLatestPolyline()
+           // viewModel.addLatestPolyline()
             moveCameraToUser()
         }
     }

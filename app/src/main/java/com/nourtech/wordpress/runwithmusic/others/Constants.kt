@@ -43,4 +43,7 @@ object Constants {
     const val POLYLINE_WIDTH = 8f
     const val MAP_ZOOM = 15f
 
+    //
+    const val CHOSEN_PLAYLIST = "CHOSEN_PLAYLIST"
+
 }
