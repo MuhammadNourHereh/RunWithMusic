@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nourtech.wordpress.runwithmusic.adapters.PlaylistsAdapter
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentPlaylistsBinding
+import com.nourtech.wordpress.runwithmusic.dialogs.Dialogs
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,15 @@ class PlaylistsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.rvPlaylists.layoutManager = LinearLayoutManager(requireContext())
+        updateAdapter()
+
+        binding.icPlaylist.setOnClickListener {
+            Dialogs.newPlaylistDialog(requireContext(),viewModel).show()
+        }
+    }
+    private fun updateAdapter() {
         binding.rvPlaylists.apply {
             layoutManager = LinearLayoutManager(requireContext())
 
@@ -43,4 +53,5 @@ class PlaylistsFragment : Fragment() {
             }
         }
     }
+
 }

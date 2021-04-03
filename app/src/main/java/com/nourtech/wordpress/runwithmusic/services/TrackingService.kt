@@ -1,26 +1,23 @@
 package com.nourtech.wordpress.runwithmusic.services
 
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_NEXT_SONG
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PREVIOUS_SONG
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_RESUME_MUSIC
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SEEK_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SKIP_NEXT_SONG
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SKIP_PREVIOUS_SONG
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_PAUSE_MUSIC
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
-import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_PLAYLIST
-import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_SONG_PATH
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
-import com.nourtech.wordpress.runwithmusic.others.Playlist
+import com.nourtech.wordpress.runwithmusic.services.components.MediaPlayerX
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
 import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
 import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -38,14 +35,12 @@ class TrackingService : LifecycleService(){
     @Inject
     lateinit var trackingMap: TrackingMap
 
-    private val mediaPlayer = MediaPlayer()
-    private var curPlayList = Playlist("unnamed")
+    private val mediaPlayerX = MediaPlayerX()
 
     companion object {
         var isTracking = MutableLiveData<Boolean>().also {
             it.postValue(false)
         }
-
     }
 
     // receive the command from out source intent
@@ -63,32 +58,17 @@ class TrackingService : LifecycleService(){
                 ACTION_STOP_SERVICE -> {
                     onStop()
                 }
-                ACTION_START_MUSIC -> {
-                    it.getStringExtra(CURRENT_SONG_PATH)?.let { it1 -> setSource(it1) }
-                    it.getSerializableExtra(CURRENT_PLAYLIST)?.let { p -> curPlayList = p as Playlist }
+                ACTION_START_PAUSE_MUSIC -> {
+                    mediaPlayerX.playPause()
                 }
-                ACTION_RESUME_MUSIC -> {
-                    playMusic()
+                ACTION_SKIP_NEXT_SONG -> {
+                    mediaPlayerX.skipNext()
                 }
-                ACTION_PAUSE_MUSIC -> {
-                    pauseMusic()
+                ACTION_SKIP_PREVIOUS_SONG -> {
+                    mediaPlayerX.skipPrevious()
                 }
-                ACTION_NEXT_SONG -> {
-                    if (!curPlayList.isEmpty()) {
-                        curPlayList.next()
-                        setSource(curPlayList.getCurrent().path)
-                        playMusic()
-                    } else {
-                    }
-                }
-
-                ACTION_PREVIOUS_SONG -> {
-                    if (!curPlayList.isEmpty()) {
-                        curPlayList.previous()
-                        setSource(curPlayList.getCurrent().path)
-                        playMusic()
-                    } else {
-                    }
+                ACTION_SEEK_MUSIC -> {
+                    it.extras?.let { it1 -> mediaPlayerX.seekTo(it1.getInt(ACTION_SEEK_MUSIC)) }
                 }
                 else -> {
 
@@ -142,66 +122,24 @@ class TrackingService : LifecycleService(){
     override fun onCreate() {
         Timber.d("the service has been created")
         isTracking.postValue(false)
-        ////subscribeToStopwatch()
-        /////subscribeToIsTracking()
+        //subscribeToStopwatch()
+        //subscribeToIsTracking()
         super.onCreate()
         startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
-        mediaPlayer.setOnCompletionListener {
-            trackingNotification.updateAction(false)
-            if (curPlayList.isEmpty())
-                stopForeground(true)
-            else
-                when (state) {
-                    Loop.NULL -> {
-                        stopForeground(true)
-                    }
-                    Loop.ALL -> {
-                        curPlayList.next()
-                        setSource(curPlayList.getCurrent().path)
-                        mediaPlayer.start()
-                    }
-                    Loop.CURRENT -> {
-                        mediaPlayer.start()
-                    }
-                }
-        }
+
     }
 
     override fun onDestroy() {
         Timber.d("the service has been destroyed")
         super.onDestroy()
-        mediaPlayer.release()
+
+    }
+    private fun setMusicLiveData() {
+        mediaPlayerX.currentPosition
+
+        mediaPlayerX.duration
     }
 
-    var state: Loop = Loop.NULL
 
-    enum class Loop {
-        ALL, CURRENT, NULL
-    }
-
-    private fun setSource(src: String) {
-
-        mediaPlayer.reset()
-        mediaPlayer.apply {
-            setDataSource(src)
-            prepareAsync()
-            setOnPreparedListener {
-                playMusic()
-                trackingNotification.updateAction(true)
-            }
-        }
-    }
-
-    private fun playMusic() {
-        if (!mediaPlayer.isPlaying)
-            mediaPlayer.start()
-        trackingNotification.updateAction(true)
-    }
-
-    private fun pauseMusic() {
-        if (mediaPlayer.isPlaying)
-            mediaPlayer.pause()
-        trackingNotification.updateAction(false)
-    }
 
 }

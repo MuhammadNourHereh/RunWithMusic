@@ -45,7 +45,9 @@ class Playlist(private var name: String) : Serializable {
             cur--
     }
 
-    fun getCurrent(): Song {
+    fun getCurrent(): Song? {
+        if (songs.isEmpty())
+            return null
         return songs[cur]
     }
 

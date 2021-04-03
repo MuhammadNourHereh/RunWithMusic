@@ -1,7 +1,6 @@
 package com.nourtech.wordpress.runwithmusic.adapters
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.Menu
@@ -9,15 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.dialogs.Dialogs
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_MUSIC
-import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_PLAYLIST
-import com.nourtech.wordpress.runwithmusic.others.Constants.CURRENT_SONG_PATH
 import com.nourtech.wordpress.runwithmusic.others.Playlist
 import com.nourtech.wordpress.runwithmusic.others.Song
-import com.nourtech.wordpress.runwithmusic.services.TrackingService
+import com.nourtech.wordpress.runwithmusic.services.components.MediaPlayerX
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -26,7 +24,8 @@ import kotlinx.coroutines.withContext
 
 class MusicListAdapter(
         private var list: List<Song>,
-        private val vm: MusicViewModel
+        private val vm: MusicViewModel,
+        private val fragment: Fragment
 ) : RecyclerView.Adapter<MusicListAdapter.MusicViewHolder>() {
 
     private lateinit var context: Context
@@ -51,8 +50,9 @@ class MusicListAdapter(
         holder.textViewArtist.text = list[position].artist
 
         holder.itemView.setOnClickListener {
-            val path = list[position].path
-            sendCommandToService(ACTION_START_MUSIC, path)
+            MediaPlayerX.song = list[position]
+            MediaPlayerX.single = true
+            findNavController(fragment).navigate(R.id.action_musicFragment_to_playerFragment)
         }
         holder.itemView.setOnLongClickListener {
             playlist.add(list[position])
@@ -63,14 +63,6 @@ class MusicListAdapter(
     }
 
     override fun getItemCount(): Int = list.size
-
-    private fun sendCommandToService(action: String, path: String) =
-            Intent(context, TrackingService::class.java).also {
-                it.action = action
-                it.putExtra(CURRENT_SONG_PATH, path)
-                it.putExtra(CURRENT_PLAYLIST, playlist)
-                context.startService(it)
-            }
 
     fun switchToPlayList() {
         list = playlist.getAll()

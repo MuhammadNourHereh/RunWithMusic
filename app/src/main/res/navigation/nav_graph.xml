@@ -43,7 +43,11 @@
     <fragment
         android:id="@+id/musicFragment"
         android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.MusicFragment"
-        android:label="MusicFragment" />
+        android:label="MusicFragment" >
+        <action
+            android:id="@+id/action_musicFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/playlistsFragment"
         android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.PlaylistsFragment"
@@ -51,9 +55,20 @@
         <action
             android:id="@+id/action_playlistsFragment_to_playListFragment"
             app:destination="@id/playListFragment" />
+        <action
+            android:id="@+id/action_playlistsFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
     </fragment>
     <fragment
         android:id="@+id/playListFragment"
         android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.PlayListFragment"
-        android:label="PlayListFragment" />
+        android:label="PlayListFragment" >
+        <action
+            android:id="@+id/action_playListFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.nourtech.wordpress.runwithmusic.ui.fragments.PlayerFragment"
+        android:label="PlayerFragment" />
 </navigation>

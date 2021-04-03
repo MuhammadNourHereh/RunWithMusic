@@ -15,6 +15,24 @@ object Dialogs {
         val view = EditText(context).apply {
             setPadding(8)
         }
+         val title = context.resources.getString(R.string.create_a_new_playlist)
+         val save = context.resources.getString(R.string.create)
+         val cancel = context.resources.getString(R.string.cancel)
+
+         return AlertDialog.Builder(context)
+                 .setTitle(title)
+                 .setView(view)
+                 .setPositiveButton(save) { _, _ ->
+                     vm.insertPlaylist(Playlist(view.text.toString(), listOf(song)))
+                 }.setNegativeButton(cancel) { di, _ ->
+                     di.dismiss()
+                 }.create()
+     }
+
+    fun newPlaylistDialog(context: Context, vm: MusicViewModel): AlertDialog {
+        val view = EditText(context).apply {
+            setPadding(8)
+        }
         val title = context.resources.getString(R.string.create_a_new_playlist)
         val save = context.resources.getString(R.string.create)
         val cancel = context.resources.getString(R.string.cancel)
@@ -23,7 +41,7 @@ object Dialogs {
                 .setTitle(title)
                 .setView(view)
                 .setPositiveButton(save) { _, _ ->
-                    vm.insertPlaylist(Playlist(view.text.toString(), listOf(song)))
+                    vm.insertPlaylist(Playlist(view.text.toString()))
                 }.setNegativeButton(cancel) { di, _ ->
                     di.dismiss()
                 }.create()

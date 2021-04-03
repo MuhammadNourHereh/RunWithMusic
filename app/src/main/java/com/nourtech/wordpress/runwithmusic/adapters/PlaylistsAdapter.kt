@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.others.Constants.CHOSEN_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.others.Playlist
+import com.nourtech.wordpress.runwithmusic.services.components.MediaPlayerX
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
 
 class PlaylistsAdapter(
@@ -26,6 +28,7 @@ class PlaylistsAdapter(
     class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewTitle: TextView = itemView.findViewById(R.id.tv_Title)
         val textViewCount: TextView = itemView.findViewById(R.id.tv_count)
+        val imageViewPlay: ImageView = itemView.findViewById(R.id.iv_play)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -35,16 +38,21 @@ class PlaylistsAdapter(
         return PlaylistViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PlaylistsAdapter.PlaylistViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
         holder.textViewTitle.text = list[position].getName()
         holder.textViewCount.text = list[position].getCount().toString()
         holder.itemView.setOnClickListener {
             findNavController(fragment).navigate(R.id.action_playlistsFragment_to_playListFragment,
                     Bundle().apply { putInt(CHOSEN_PLAYLIST, position) })
         }
+        holder.imageViewPlay.setOnClickListener {
+            MediaPlayerX.curPlayList = list[position]
+            MediaPlayerX.single = false
+            findNavController(fragment).navigate(R.id.action_playlistsFragment_to_playerFragment)
+        }
         holder.itemView.setOnLongClickListener {
             showPopupMenu(it, list[position])
-           true
+            true
         }
     }
 

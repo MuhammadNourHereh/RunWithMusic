@@ -47,7 +47,7 @@ class MusicFragment: Fragment() {
         // set up recycler view
 
         binding.recyclerviewMusic.apply {
-            adapter = MusicListAdapter(songList, viewModel)
+            adapter = MusicListAdapter(songList, viewModel, this@MusicFragment)
             layoutManager = LinearLayoutManager(requireContext())
         }
 
