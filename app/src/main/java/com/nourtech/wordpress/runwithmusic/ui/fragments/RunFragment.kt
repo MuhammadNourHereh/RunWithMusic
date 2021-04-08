@@ -6,12 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.nourtech.wordpress.runwithmusic.R
+import com.nourtech.wordpress.runwithmusic.adapters.RunAdapter
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentRunBinding
 import com.nourtech.wordpress.runwithmusic.others.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import com.nourtech.wordpress.runwithmusic.others.SortType
 import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
+import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -20,10 +26,14 @@ import pub.devrel.easypermissions.EasyPermissions
 class RunFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentRunBinding
 
+
+    private lateinit var runAdapter: RunAdapter
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         binding = FragmentRunBinding.inflate(inflater, container, false)
         return binding.root
@@ -31,13 +41,51 @@ class RunFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // setup UI
+        binding.apply {
+            when (viewModel.sortType) {
+                SortType.DATE -> spFilter.setSelection(0)
+                SortType.RUNNING_TIME -> spFilter.setSelection(1)
+                SortType.DISTANCE -> spFilter.setSelection(2)
+                SortType.AVG_SPEED -> spFilter.setSelection(3)
+                SortType.CALORIES_BURNED -> spFilter.setSelection(4)
+            }
+            rvRuns.apply {
+                runAdapter = RunAdapter()
+                adapter = runAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+            }
+            fab.setOnClickListener {
+                findNavController().navigate(R.id.action_runFragment_to_trackingFragment)
+            }
+            spFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+                override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+                    when (pos) {
+                        0 -> viewModel.sortRuns(SortType.DATE)
+                        1 -> viewModel.sortRuns(SortType.RUNNING_TIME)
+                        2 -> viewModel.sortRuns(SortType.DISTANCE)
+                        3 -> viewModel.sortRuns(SortType.AVG_SPEED)
+                        4 -> viewModel.sortRuns(SortType.CALORIES_BURNED)
+                    }
+                }
+            }
+            fab.setOnClickListener {
+                findNavController().navigate(R.id.action_runFragment_to_trackingFragment)
+            }
+        }
+
         // request permission
         requestPermissions()
 
-        binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_runFragment_to_trackingFragment)
+        // observe runs
+        viewModel.runs.observe(viewLifecycleOwner) {
+            runAdapter.submitList(it)
         }
     }
+
 
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {

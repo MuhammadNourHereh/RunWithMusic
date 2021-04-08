@@ -22,7 +22,7 @@
             android:id="@+id/tvTotalDistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_0km"
+            android:text="0km"
             android:textSize="40sp"
             app:layout_constraintBottom_toTopOf="@+id/tvTotalDistanceInfo"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +32,7 @@
             android:id="@+id/tvTotalTimeInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total_time"
+            android:text="Total Time"
             app:layout_constraintBottom_toTopOf="@+id/tvTotalCaloriesInfo"
             app:layout_constraintEnd_toEndOf="@+id/tvTotalTime"
             app:layout_constraintHorizontal_bias="0.5"
@@ -43,7 +43,7 @@
             android:id="@+id/tvTotalTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_00_00_00"
+            android:text="00:00:00"
             android:textSize="40sp"
             app:layout_constraintBottom_toTopOf="@+id/tvTotalTimeInfo"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
@@ -105,8 +105,8 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChart"
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

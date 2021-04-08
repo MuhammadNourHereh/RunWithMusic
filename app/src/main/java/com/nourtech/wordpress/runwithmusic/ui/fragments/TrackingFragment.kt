@@ -11,8 +11,10 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.snackbar.Snackbar
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentTrackingBinding
+import com.nourtech.wordpress.runwithmusic.db.RunEntity
 import com.nourtech.wordpress.runwithmusic.others.Constants
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
@@ -23,7 +25,9 @@ import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
 import com.nourtech.wordpress.runwithmusic.services.components.map.LocationProvider
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
+import kotlin.math.round
 
 
 @AndroidEntryPoint
@@ -35,6 +39,8 @@ class TrackingFragment : Fragment() {
     @Inject
     lateinit var stopwatch: Stopwatch
 
+    @set:Inject
+    var weight = 80f
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -87,6 +93,7 @@ class TrackingFragment : Fragment() {
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
         zoomToSeeWholeTrack()
+        endRunAndSaveToDb()
         ///findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
 
@@ -157,6 +164,25 @@ class TrackingFragment : Fragment() {
         }
     }
 
+    private fun endRunAndSaveToDb() {
+        viewModel.map?.snapshot { bmp ->
+            var distanceInMeters = 0
+            for(polyline in viewModel.path.value!!.getPolylines()) {
+                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
+            }
+            val timeInMillis = stopwatch.timeRunInMillis.value!!
+            val avgSpeed = round((distanceInMeters / 1000f) / (timeInMillis / 1000f / 60 / 60) * 10) / 10f
+            val dateTimestamp = Calendar.getInstance().timeInMillis
+            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
+            val run = RunEntity(bmp, dateTimestamp, avgSpeed, distanceInMeters, timeInMillis, caloriesBurned)
+            viewModel.insertRun(run)
+            Snackbar.make(
+                    requireActivity().findViewById(R.id.rootView),
+                    "Run saved successfully",
+                    Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -188,3 +214,4 @@ class TrackingFragment : Fragment() {
         binding.mapView.onSaveInstanceState(outState)
     }
 }
+
