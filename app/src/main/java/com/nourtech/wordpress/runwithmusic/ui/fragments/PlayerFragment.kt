@@ -134,9 +134,9 @@ class PlayerFragment : Fragment() {
         }
         shuffle.observe(viewLifecycleOwner) {
             if (it) {
-                binding.ivPlay.setImageResource(R.drawable.ic_shuffle_on_white_48dp)
+                binding.ivShuffle.setImageResource(R.drawable.ic_shuffle_on_white_48dp)
             } else {
-                binding.ivPlay.setImageResource(R.drawable.ic_shuffle_white_48dp)
+                binding.ivShuffle.setImageResource(R.drawable.ic_shuffle_white_48dp)
             }
         }
         state.observe(viewLifecycleOwner) {

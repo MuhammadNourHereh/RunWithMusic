@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.nourtech.wordpress.runwithmusic.others.Playlist
 import com.nourtech.wordpress.runwithmusic.others.Song
 import kotlinx.coroutines.*
-import timber.log.Timber
 
 class MediaPlayerX : MediaPlayer() {
 
@@ -45,30 +44,46 @@ class MediaPlayerX : MediaPlayer() {
     enum class Loop {
         ALL, CURRENT, NULL
     }
-
+    init {
+        onCompleteListener()
+    }
 
     fun setSong(song: Song) {
         curPlayList.postValue(Playlist(song.title, listOf(song)))
+        setSource()
     }
     fun setPlaylist(playlist: Playlist) {
         curPlayList.postValue(playlist)
+        setSource()
     }
 
     fun playPause() {
-        if (isPlaying) {
-            pause()
-        } else {
-            start()
+        try {
+            if (isPlaying) {
+                pause()
+            } else {
+                start()
+            }
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
         }
         refresh()
     }
     fun skipNext() {
-        curPlayList.value!!.next()
+        curPlayList.value?.apply {
+            this.next()
+            curPlayList.postValue(this)
+        }
         setSource()
+        start()
     }
     fun skipPrevious() {
-        curPlayList.value!!.previous()
+        curPlayList.value?.apply {
+            this.previous()
+            curPlayList.postValue(this)
+        }
         setSource()
+        start()
     }
     override fun seekTo(msec: Int) {
         super.seekTo(msec)
@@ -93,35 +108,21 @@ class MediaPlayerX : MediaPlayer() {
     }
 
     private fun setSource() {
-
-        job.cancel()
+        val src = curPlayList.value?.getCurrent()
         reset()
-
-        val src = curPlayList.value!!.getCurrent() ?: return
-
-        curSongTitle.postValue(src.title)
-        curSongArtist.postValue(src.artist)
-
-        setDataSource(src.path)
+        setDataSource(src!!.path)
+        prepare()
         initJob()
-        prepareAsync()
-        setOnPreparedListener {
-            currentSongDuration.postValue(duration.toLong())
-            curIsPlaying.postValue(isPlaying)
-            Timber.d("duration :$duration")
-            if (!isPlaying)
-                start()
-            job.start()
-
-        }
+        job.start()
+        refresh()
     }
 
 
     fun refresh() {
-        val src = curPlayList.value!!.getCurrent() ?: return
+        val src = curPlayList.value?.getCurrent()
 
-        curSongTitle.postValue(src.title)
-        curSongArtist.postValue(src.artist)
+        curSongTitle.postValue(src?.title)
+        curSongArtist.postValue(src?.artist)
         curIsPlaying.postValue(isPlaying)
         currentSongDuration.postValue(duration.toLong())
         curProgress.postValue(((100f / duration) * currentPosition).toInt())
@@ -129,6 +130,8 @@ class MediaPlayerX : MediaPlayer() {
     }
 
     private fun initJob() {
+        if (job.isActive)
+            job.cancel()
         val scope = CoroutineScope(Dispatchers.Default).launch {
             while (true) {
                 if (isPlaying) {
@@ -143,10 +146,23 @@ class MediaPlayerX : MediaPlayer() {
                 delay(1000)
             }
         }
-        if (job.isActive)
-            job.cancel()
         job = Job(scope)
     }
+    private fun onCompleteListener() {
+        setOnCompletionListener {
+            refresh()
+            when (state.value) {
+                Loop.NULL -> {
 
+                }
+                Loop.CURRENT -> {
+                    start()
+                }
+                Loop.ALL -> {
+                    skipNext()
+                }
+            }
+        }
+    }
 
 }

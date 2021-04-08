@@ -17,6 +17,7 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_PAUSE_M
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_TOGGLE_SHUFFLE
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
+import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_SONG
 import com.nourtech.wordpress.runwithmusic.others.Playlist
 import com.nourtech.wordpress.runwithmusic.others.Song
@@ -71,7 +72,7 @@ class TrackingService : LifecycleService(){
                     mediaPlayerX.setSong(song)
                 }
                 ACTION_SET_PLAYLIST -> {
-                    val playlist = it.extras?.getSerializable(SEND_CURRENT_SONG) as Playlist
+                    val playlist = it.extras?.getSerializable(SEND_CURRENT_PLAYLIST) as Playlist
                     mediaPlayerX.setPlaylist(playlist)
                 }
                 ACTION_START_PAUSE_MEDIA -> {

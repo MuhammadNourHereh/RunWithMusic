@@ -1,6 +1,7 @@
 package com.nourtech.wordpress.runwithmusic.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -13,8 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nourtech.wordpress.runwithmusic.R
+import com.nourtech.wordpress.runwithmusic.others.Constants
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.others.Constants.CHOSEN_PLAYLIST
+import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.others.Playlist
+import com.nourtech.wordpress.runwithmusic.others.Song
+import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import com.nourtech.wordpress.runwithmusic.services.components.MediaPlayerX
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
 
@@ -46,9 +52,8 @@ class PlaylistsAdapter(
                     Bundle().apply { putInt(CHOSEN_PLAYLIST, position) })
         }
         holder.imageViewPlay.setOnClickListener {
-            //MediaPlayerX.curPlayList =   list[position]
+            sendCommandToService(list[position])
             findNavController(fragment).navigate(R.id.action_playlistsFragment_to_playerFragment)
-            TODO(" fix the mediaPlayer")
         }
         holder.itemView.setOnLongClickListener {
             showPopupMenu(it, list[position])
@@ -69,5 +74,11 @@ class PlaylistsAdapter(
         popup.show()
     }
 
+    private fun sendCommandToService(playlist: Playlist) =
+            Intent(fragment.requireContext(), TrackingService::class.java).also {
+                it.action = ACTION_SET_PLAYLIST
+                it.putExtra(SEND_CURRENT_PLAYLIST, playlist)
+                fragment.requireContext().startService(it)
+            }
 
 }
