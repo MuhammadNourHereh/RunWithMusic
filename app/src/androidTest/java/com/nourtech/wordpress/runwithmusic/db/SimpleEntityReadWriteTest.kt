@@ -31,23 +31,4 @@ class SimpleEntityReadWriteTest {
         db.close()
     }
 
-    @Test
-    @Throws(Exception::class)
-     fun writeAndPlaylistNameInList() = runBlocking {
-        val user = PlaylistEntity("playlist 1" ,
-                listOf(Song("title", "artist", "path")))
-        playlistsDAO.insertPlaylist(user)
-        val getUser = playlistsDAO.getAllPlaylists()[0]
-        assert(getUser.name == "playlist 1") { "the test failed" }
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun writeAndReadSongInPlaylistInList() = runBlocking {
-        val user = PlaylistEntity("playlist 1" ,
-                listOf(Song("title", "artist", "path")))
-        playlistsDAO.insertPlaylist(user)
-        val getUser = playlistsDAO.getAllPlaylists()[0]
-        assert(getUser.songs[0].path == "path") { "the test failed" }
-    }
 }

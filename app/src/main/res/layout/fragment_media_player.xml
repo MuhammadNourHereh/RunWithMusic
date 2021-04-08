@@ -20,6 +20,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/tv_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/artist"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
         <SeekBar
             android:id="@+id/sb_progress"
             android:layout_width="0dp"
@@ -57,7 +67,7 @@
             android:layout_marginTop="8dp"
             app:chainUseRtl="false"
             app:layout_constraintStart_toStartOf="@+id/tv_run_time"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_artist"
             app:srcCompat="@drawable/ic_repeat_white_48dp" />
 
         <ImageView
@@ -95,5 +105,15 @@
             app:layout_constraintStart_toEndOf="@+id/iv_play"
             app:layout_constraintTop_toTopOf="@+id/iv_play"
             app:srcCompat="@drawable/ic_skip_next_white_48dp" />
+
+        <ImageView
+            android:id="@+id/iv_shuffle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_repeat"
+            app:layout_constraintEnd_toEndOf="@+id/tv_song_time"
+            app:layout_constraintTop_toTopOf="@+id/iv_repeat"
+            app:srcCompat="@drawable/ic_shuffle_white_48dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

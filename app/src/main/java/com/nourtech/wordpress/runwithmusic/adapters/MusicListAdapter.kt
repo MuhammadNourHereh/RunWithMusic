@@ -50,8 +50,6 @@ class MusicListAdapter(
         holder.textViewArtist.text = list[position].artist
 
         holder.itemView.setOnClickListener {
-            MediaPlayerX.song = list[position]
-            MediaPlayerX.single = true
             findNavController(fragment).navigate(R.id.action_musicFragment_to_playerFragment)
         }
         holder.itemView.setOnLongClickListener {

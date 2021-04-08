@@ -4,20 +4,27 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_CHANGE_REPEAT_STATE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SEEK_MUSIC
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SKIP_NEXT_SONG
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SKIP_PREVIOUS_SONG
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_PAUSE_MUSIC
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_REFRESH_MEDIA
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SEEK_MEDIA
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_PLAYLIST
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_SONG
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SKIP_NEXT_MEDIA
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SKIP_PREVIOUS_MEDIA
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_OR_RESUME_SERVICE
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_PAUSE_MEDIA
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
+import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_TOGGLE_SHUFFLE
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
+import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_SONG
+import com.nourtech.wordpress.runwithmusic.others.Playlist
+import com.nourtech.wordpress.runwithmusic.others.Song
 import com.nourtech.wordpress.runwithmusic.services.components.MediaPlayerX
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
 import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
 import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -58,23 +65,38 @@ class TrackingService : LifecycleService(){
                 ACTION_STOP_SERVICE -> {
                     onStop()
                 }
-                ACTION_START_PAUSE_MUSIC -> {
+                // media player commands
+                ACTION_SET_SONG -> {
+                    val song = it.extras?.getSerializable(SEND_CURRENT_SONG) as Song
+                    mediaPlayerX.setSong(song)
+                }
+                ACTION_SET_PLAYLIST -> {
+                    val playlist = it.extras?.getSerializable(SEND_CURRENT_SONG) as Playlist
+                    mediaPlayerX.setPlaylist(playlist)
+                }
+                ACTION_START_PAUSE_MEDIA -> {
                     mediaPlayerX.playPause()
                 }
-                ACTION_SKIP_NEXT_SONG -> {
+                ACTION_SKIP_NEXT_MEDIA -> {
                     mediaPlayerX.skipNext()
                 }
-                ACTION_SKIP_PREVIOUS_SONG -> {
+                ACTION_SKIP_PREVIOUS_MEDIA -> {
                     mediaPlayerX.skipPrevious()
                 }
-                ACTION_SEEK_MUSIC -> {
-                    it.extras?.let { it1 -> mediaPlayerX.seekTo(it1.getInt(ACTION_SEEK_MUSIC)) }
+                ACTION_SEEK_MEDIA -> {
+                    val value = it.extras?.getInt(ACTION_SEEK_MEDIA)
+                    mediaPlayerX.seekTo(value!!)
                 }
-                else -> {
-
+                ACTION_REFRESH_MEDIA -> {
+                    mediaPlayerX.refresh()
+                }
+                ACTION_CHANGE_REPEAT_STATE -> {
+                    mediaPlayerX.changeLoop()
+                }
+                ACTION_TOGGLE_SHUFFLE -> {
+                    mediaPlayerX.shuffle()
                 }
             }
-
         }
         return super.onStartCommand(intent, flags, startId)
     }

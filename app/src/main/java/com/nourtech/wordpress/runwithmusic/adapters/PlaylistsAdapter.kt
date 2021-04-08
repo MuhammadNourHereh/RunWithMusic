@@ -46,9 +46,9 @@ class PlaylistsAdapter(
                     Bundle().apply { putInt(CHOSEN_PLAYLIST, position) })
         }
         holder.imageViewPlay.setOnClickListener {
-            MediaPlayerX.curPlayList = list[position]
-            MediaPlayerX.single = false
+            //MediaPlayerX.curPlayList =   list[position]
             findNavController(fragment).navigate(R.id.action_playlistsFragment_to_playerFragment)
+            TODO(" fix the mediaPlayer")
         }
         holder.itemView.setOnLongClickListener {
             showPopupMenu(it, list[position])
