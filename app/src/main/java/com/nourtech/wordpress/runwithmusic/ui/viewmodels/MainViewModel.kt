@@ -9,7 +9,6 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.nourtech.wordpress.runwithmusic.others.Constants
 import com.nourtech.wordpress.runwithmusic.repositories.MainRepository
 import com.nourtech.wordpress.runwithmusic.services.components.map.Path
-import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -32,7 +31,7 @@ class MainViewModel @Inject constructor(val repo: MainRepository): ViewModel()  
     }
     /* add a new poly line */
      fun addLatestPolyline() {
-        if (path.value!!.hasAtLeastTowPoints()) {
+        if (path.value?.hasAtLeastTowPoints() == true) {
             val preLastLatLng = path.value!!.getPreLastLatLng()
             val lastLatLng = path.value!!.getLastLatLng()
             val polyLineOptions = PolylineOptions()
@@ -42,5 +41,9 @@ class MainViewModel @Inject constructor(val repo: MainRepository): ViewModel()  
                     .add(lastLatLng)
             map?.addPolyline(polyLineOptions)
         }
+    }
+
+    fun saveRun() {
+        repo
     }
 }

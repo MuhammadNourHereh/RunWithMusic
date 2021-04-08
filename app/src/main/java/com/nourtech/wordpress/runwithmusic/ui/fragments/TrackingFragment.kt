@@ -1,7 +1,6 @@
 package com.nourtech.wordpress.runwithmusic.ui.fragments
 
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,10 +20,9 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.TrackingUtility
 import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
-import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
+import com.nourtech.wordpress.runwithmusic.services.components.map.LocationProvider
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -56,7 +54,7 @@ class TrackingFragment : Fragment() {
 
             mapView.getMapAsync {
                 viewModel.map = it
-//                addAllPolylines()
+                addAllPolylines()
             }
 
             // set on click listeners
@@ -88,12 +86,13 @@ class TrackingFragment : Fragment() {
 
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
-        findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
+        zoomToSeeWholeTrack()
+        ///findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
 
     /* keep the camera focus on the path */
     private fun moveCameraToUser() {
-        if (viewModel.path.value!!.isEmpty()) {
+        if (viewModel.path.value?.isEmpty() == true) {
             viewModel.map?.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(
                             viewModel.path.value!!.getLastLatLng(),
@@ -105,29 +104,34 @@ class TrackingFragment : Fragment() {
 
     /* redraw all polylines after rotation */
     private fun addAllPolylines() {
-        for (polyline in viewModel.path.value!!.getPolylines()) {
-            val polyLineOptions = PolylineOptions()
-                    .color(Constants.POLYLINE_COLOR)
-                    .width(Constants.POLYLINE_WIDTH)
-                    .addAll(polyline)
-            viewModel.map?.addPolyline(polyLineOptions)
+        viewModel.path.value?.let {
+            for (polyline in it.getPolylines()) {
+                val polyLineOptions = PolylineOptions()
+                        .color(Constants.POLYLINE_COLOR)
+                        .width(Constants.POLYLINE_WIDTH)
+                        .addAll(polyline)
+                viewModel.map?.addPolyline(polyLineOptions)
+            }
         }
     }
 
     private fun zoomToSeeWholeTrack() {
         val bounds = LatLngBounds.builder()
-        for (polyline in viewModel.path.value!!.getPolylines())
-            for (pos in polyline) {
-                bounds.include(pos)
-            }
-        viewModel.map?.moveCamera(
-                CameraUpdateFactory.newLatLngBounds(
-                        bounds.build(),
-                        binding.mapView.width,
-                        binding.mapView.height,
-                        (binding.mapView.height * 0.05F).toInt()
-                )
-        )
+        viewModel.path.value?.let {
+            for (polyline in it.getPolylines())
+                for (pos in polyline) {
+                    bounds.include(pos)
+                }
+            viewModel.map?.moveCamera(
+                    CameraUpdateFactory.newLatLngBounds(
+                            bounds.build(),
+                            binding.mapView.width,
+                            binding.mapView.height,
+                            (binding.mapView.height * 0.05F).toInt()
+                    )
+            )
+        }
+
     }
 
 
@@ -146,9 +150,9 @@ class TrackingFragment : Fragment() {
         TrackingService.isTracking.observe(viewLifecycleOwner) {
             isTracking = it
         }
-        TrackingMap.latestLatLng.observe(viewLifecycleOwner) {
+        LocationProvider.latestLatLng.observe(viewLifecycleOwner) {
             viewModel.addPoint(it)
-           // viewModel.addLatestPolyline()
+            viewModel.addLatestPolyline()
             moveCameraToUser()
         }
     }

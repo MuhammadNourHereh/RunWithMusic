@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.dialogs.Dialogs
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_SONG
-import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_SONG
+import com.nourtech.wordpress.runwithmusic.others.Constants.EXTRA_CURRENT_SONG
 import com.nourtech.wordpress.runwithmusic.others.Song
 import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
@@ -96,7 +96,7 @@ class MusicListAdapter(
     private fun sendCommandToService(song: Song) =
             Intent(fragment.requireContext(), TrackingService::class.java).also {
                 it.action = ACTION_SET_SONG
-                it.putExtra(SEND_CURRENT_SONG, song)
+                it.putExtra(EXTRA_CURRENT_SONG, song)
                 fragment.requireContext().startService(it)
             }
 

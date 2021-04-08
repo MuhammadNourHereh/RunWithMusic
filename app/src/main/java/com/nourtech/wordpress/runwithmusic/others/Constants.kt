@@ -25,8 +25,8 @@ object Constants {
     const val ACTION_SET_SONG = "ACTION_SET_SONG"
     const val ACTION_SET_PLAYLIST = "ACTION_SET_PLAYLIST"
     const val ACTION_TOGGLE_SHUFFLE = "ACTION_TOGGLE_SHUFFLE"
-    const val SEND_CURRENT_SONG = "SEND_CURRENT_SONG"
-    const val SEND_CURRENT_PLAYLIST = "SEND_CURRENT_PLAYLIST"
+    const val EXTRA_CURRENT_SONG = "EXTRA_CURRENT_SONG"
+    const val EXTRA_CURRENT_PLAYLIST = "EXTRA_CURRENT_PLAYLIST"
 
     //notification const
     const val NOTIFICATION_CHANNEL_ID = "tracking_channel"
@@ -48,7 +48,7 @@ object Constants {
     const val POLYLINE_WIDTH = 8f
     const val MAP_ZOOM = 15f
 
-    //
-    const val CHOSEN_PLAYLIST = "CHOSEN_PLAYLIST"
+    //bundle
+    const val EXTRA_CHOSEN_PLAYLIST = "EXTRA_CHOSEN_PLAYLIST"
 
 }

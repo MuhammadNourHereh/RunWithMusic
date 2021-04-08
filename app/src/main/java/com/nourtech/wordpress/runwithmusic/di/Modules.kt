@@ -7,7 +7,7 @@ import com.nourtech.wordpress.runwithmusic.db.DataBase
 import com.nourtech.wordpress.runwithmusic.others.Constants.RUN_DB_NAME
 import com.nourtech.wordpress.runwithmusic.others.Song
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
-import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
+import com.nourtech.wordpress.runwithmusic.services.components.map.LocationProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,7 +39,7 @@ object Modules {
 
     @Singleton
     @Provides
-    fun provideTrackingMap(@ApplicationContext app: Context) = TrackingMap(app)
+    fun provideTrackingMap(@ApplicationContext app: Context) = LocationProvider(app)
 
     @Singleton
     @Provides

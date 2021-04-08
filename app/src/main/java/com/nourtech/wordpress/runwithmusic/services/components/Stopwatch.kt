@@ -65,15 +65,14 @@ class Stopwatch {
                 timeRunInMillis.postValue(previousLabsTime + currentLabTime)
 
                 if (currentLabTime >= lastSecondTimeStamp + 1000L) {
-                    timeRunInSeconds.postValue((timeRunInSeconds.value!! + 1))
+                    timeRunInSeconds.postValue((previousLabsTime + currentLabTime) / 1000)
                     lastSecondTimeStamp += 1000L
-                    // TODO fix delay in timeRunInSeconds
                 }
 
                 delay(TIMER_UPDATE_INTERVAL)
             }
             previousLabsTime += currentLabTime
-            lastSecondTimeStamp = 0
+            lastSecondTimeStamp %= 1000L
         }
     }
 

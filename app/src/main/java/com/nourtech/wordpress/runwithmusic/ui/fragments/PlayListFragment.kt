@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nourtech.wordpress.runwithmusic.adapters.PlaylistAdapter
 import com.nourtech.wordpress.runwithmusic.databinding.FragmentPlaylistBinding
-import com.nourtech.wordpress.runwithmusic.others.Constants.CHOSEN_PLAYLIST
+import com.nourtech.wordpress.runwithmusic.others.Constants.EXTRA_CHOSEN_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +40,7 @@ class PlayListFragment: Fragment() {
                 val list = viewModel.getPlaylists()
 
                 withContext(Dispatchers.Main) {
-                    adapter = PlaylistAdapter(list[arguments?.getInt(CHOSEN_PLAYLIST)!!],this@PlayListFragment)
+                    adapter = PlaylistAdapter(list[arguments?.getInt(EXTRA_CHOSEN_PLAYLIST)!!],this@PlayListFragment)
                 }
             }
         }

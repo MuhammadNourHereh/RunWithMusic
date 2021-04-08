@@ -6,7 +6,6 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_CHANGE_REPEAT_STATE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_PAUSE_SERVICE
-import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_REFRESH_MEDIA
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SEEK_MEDIA
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_PLAYLIST
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_SONG
@@ -17,14 +16,14 @@ import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_START_PAUSE_M
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_STOP_SERVICE
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_TOGGLE_SHUFFLE
 import com.nourtech.wordpress.runwithmusic.others.Constants.NOTIFICATION_ID
-import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_PLAYLIST
-import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_SONG
+import com.nourtech.wordpress.runwithmusic.others.Constants.EXTRA_CURRENT_PLAYLIST
+import com.nourtech.wordpress.runwithmusic.others.Constants.EXTRA_CURRENT_SONG
 import com.nourtech.wordpress.runwithmusic.others.Playlist
 import com.nourtech.wordpress.runwithmusic.others.Song
 import com.nourtech.wordpress.runwithmusic.services.components.MediaPlayerX
 import com.nourtech.wordpress.runwithmusic.services.components.Stopwatch
 import com.nourtech.wordpress.runwithmusic.services.components.TrackingNotification
-import com.nourtech.wordpress.runwithmusic.services.components.map.TrackingMap
+import com.nourtech.wordpress.runwithmusic.services.components.map.LocationProvider
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,7 +40,7 @@ class TrackingService : LifecycleService(){
     lateinit var trackingNotification: TrackingNotification
 
     @Inject
-    lateinit var trackingMap: TrackingMap
+    lateinit var locationProvider: LocationProvider
 
     private val mediaPlayerX = MediaPlayerX()
 
@@ -68,11 +67,11 @@ class TrackingService : LifecycleService(){
                 }
                 // media player commands
                 ACTION_SET_SONG -> {
-                    val song = it.extras?.getSerializable(SEND_CURRENT_SONG) as Song
+                    val song = it.extras?.getSerializable(EXTRA_CURRENT_SONG) as Song
                     mediaPlayerX.setSong(song)
                 }
                 ACTION_SET_PLAYLIST -> {
-                    val playlist = it.extras?.getSerializable(SEND_CURRENT_PLAYLIST) as Playlist
+                    val playlist = it.extras?.getSerializable(EXTRA_CURRENT_PLAYLIST) as Playlist
                     mediaPlayerX.setPlaylist(playlist)
                 }
                 ACTION_START_PAUSE_MEDIA -> {
@@ -88,9 +87,6 @@ class TrackingService : LifecycleService(){
                     val value = it.extras?.getInt(ACTION_SEEK_MEDIA)
                     mediaPlayerX.seekTo(value!!)
                 }
-                ACTION_REFRESH_MEDIA -> {
-                    mediaPlayerX.refresh()
-                }
                 ACTION_CHANGE_REPEAT_STATE -> {
                     mediaPlayerX.changeLoop()
                 }
@@ -104,6 +100,7 @@ class TrackingService : LifecycleService(){
 
     private fun onStart() {
         Timber.d("started service")
+
         isTracking.postValue(true)
         stopwatch.startTimer()
         startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
@@ -124,7 +121,7 @@ class TrackingService : LifecycleService(){
 
     private fun subscribeToStopwatch() {
         stopwatch.timeRunInSeconds.observe(this) {
-            if (isTracking.value!!)
+            if (isTracking.value == true)
                 Timber.d("the time in seconds is :$it")
             trackingNotification.updateNotification(it)
         }
@@ -132,7 +129,7 @@ class TrackingService : LifecycleService(){
 
     private fun subscribeToIsTracking() {
         isTracking.observe(this) {
-            trackingMap.toggleTracking(it)
+            locationProvider.toggleTracking(it)
         }
     }
 
@@ -143,26 +140,21 @@ class TrackingService : LifecycleService(){
     }
 
     override fun onCreate() {
+        super.onCreate()
         Timber.d("the service has been created")
         isTracking.postValue(false)
-        //subscribeToStopwatch()
-        //subscribeToIsTracking()
-        super.onCreate()
+        stopwatch // for initialize the property
+        subscribeToStopwatch()
+        subscribeToIsTracking()
         startForeground(NOTIFICATION_ID, trackingNotification.getNotification())
 
     }
 
     override fun onDestroy() {
         Timber.d("the service has been destroyed")
+        mediaPlayerX.release()
         super.onDestroy()
 
     }
-    private fun setMusicLiveData() {
-        mediaPlayerX.currentPosition
-
-        mediaPlayerX.duration
-    }
-
-
 
 }

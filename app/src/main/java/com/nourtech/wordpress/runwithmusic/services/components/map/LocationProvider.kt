@@ -19,19 +19,15 @@ import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import timber.log.Timber
 
 
-class TrackingMap(val app: Context) {
-
+class LocationProvider(val app: Context) {
 
     private var isTracking = false
     private val fusedLocationProviderClient = FusedLocationProviderClient(app)
+
     companion object {
         private val mLatestLatLng = MutableLiveData<LatLng>()
         val latestLatLng: LiveData<LatLng>
             get() = mLatestLatLng
-    }
-
-    init {
-        mLatestLatLng.postValue(LatLng(0.0, 0.0))
     }
 
     fun toggleTracking(isTracking: Boolean) {
@@ -39,20 +35,28 @@ class TrackingMap(val app: Context) {
         updateLocationTracking(isTracking)
     }
 
+    private fun onLocationReceived(location: Location) {
+        Timber.d("NEW LOCATION: ${location.latitude}, ${location.longitude}")
+        mLatestLatLng.postValue(LatLng(location.latitude, location.longitude))
+    }
+
     @SuppressLint("MissingPermission")
     private fun updateLocationTracking(isTracking: Boolean) {
         if (isTracking) {
             if (TrackingUtility.hasLocationPermissions(app)) {
+
                 val request = LocationRequest().apply {
                     interval = LOCATION_UPDATE_INTERVAL
                     fastestInterval = FASTEST_LOCATION_INTERVAL
                     priority = PRIORITY_HIGH_ACCURACY
                 }
+
                 fusedLocationProviderClient.requestLocationUpdates(
                         request,
                         locationCallback,
                         Looper.getMainLooper()
                 )
+
             }
         } else {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
@@ -70,11 +74,6 @@ class TrackingMap(val app: Context) {
                 }
             }
         }
-    }
-
-    private fun onLocationReceived(location: Location) {
-        Timber.d("NEW LOCATION: ${location.latitude}, ${location.longitude}")
-        mLatestLatLng.postValue(LatLng(location.latitude, location.longitude))
     }
 
 }
