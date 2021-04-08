@@ -40,7 +40,7 @@ class PlayListFragment: Fragment() {
                 val list = viewModel.getPlaylists()
 
                 withContext(Dispatchers.Main) {
-                    adapter = PlaylistAdapter(list[arguments?.getInt(CHOSEN_PLAYLIST)!!].getAll(),this@PlayListFragment)
+                    adapter = PlaylistAdapter(list[arguments?.getInt(CHOSEN_PLAYLIST)!!],this@PlayListFragment)
                 }
             }
         }

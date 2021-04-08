@@ -9,8 +9,15 @@ import kotlinx.coroutines.*
 class MediaPlayerX : MediaPlayer() {
 
     private var job = Job()
+    private var playlist = Playlist("empty")
+
+
+    private var refreshRate = SLOW_REFRESH_RATE
+
 
     companion object {
+        private const val SLOW_REFRESH_RATE = 1000L
+        private const val FAST_REFRESH_RATE = 100L
 
         var curPlayList = MutableLiveData<Playlist>().also {
             it.postValue(Playlist("current_playlist"))
@@ -44,29 +51,31 @@ class MediaPlayerX : MediaPlayer() {
     enum class Loop {
         ALL, CURRENT, NULL
     }
+
     init {
         onCompleteListener()
+        initJob()
     }
 
     fun setSong(song: Song) {
         curPlayList.postValue(Playlist(song.title, listOf(song)))
+        playlist = Playlist(song.title, listOf(song))
         setSource()
     }
     fun setPlaylist(playlist: Playlist) {
         curPlayList.postValue(playlist)
+        this.playlist = playlist
         setSource()
     }
 
     fun playPause() {
-        try {
-            if (isPlaying) {
-                pause()
-            } else {
-                start()
-            }
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
+
+        if (curIsPlaying.value == true) {
+            pause()
+        } else {
+            start()
         }
+
         refresh()
     }
     fun skipNext() {
@@ -74,6 +83,7 @@ class MediaPlayerX : MediaPlayer() {
             this.next()
             curPlayList.postValue(this)
         }
+        playlist.next()
         setSource()
         start()
     }
@@ -82,6 +92,7 @@ class MediaPlayerX : MediaPlayer() {
             this.previous()
             curPlayList.postValue(this)
         }
+        playlist.previous()
         setSource()
         start()
     }
@@ -108,21 +119,21 @@ class MediaPlayerX : MediaPlayer() {
     }
 
     private fun setSource() {
-        val src = curPlayList.value?.getCurrent()
+        val src = playlist.getCurrent()!!
         reset()
-        setDataSource(src!!.path)
+        setDataSource(src.path)
         prepare()
-        initJob()
+        refreshRate = if (duration > 60_000)  SLOW_REFRESH_RATE else FAST_REFRESH_RATE
         job.start()
         refresh()
     }
 
 
     fun refresh() {
-        val src = curPlayList.value?.getCurrent()
+        val src = playlist.getCurrent()!!
 
-        curSongTitle.postValue(src?.title)
-        curSongArtist.postValue(src?.artist)
+        curSongTitle.postValue(src.title)
+        curSongArtist.postValue(src.artist)
         curIsPlaying.postValue(isPlaying)
         currentSongDuration.postValue(duration.toLong())
         curProgress.postValue(((100f / duration) * currentPosition).toInt())
@@ -134,7 +145,7 @@ class MediaPlayerX : MediaPlayer() {
             job.cancel()
         val scope = CoroutineScope(Dispatchers.Default).launch {
             while (true) {
-                if (isPlaying) {
+                if (curIsPlaying.value == true) {
                     withContext(Dispatchers.Main) {
                         // update progress bar value
                         curProgress.postValue(((100f / duration) * currentPosition).toInt())
@@ -143,17 +154,18 @@ class MediaPlayerX : MediaPlayer() {
                         curSongTime.postValue(currentPosition)
                     }
                 }
-                delay(1000)
+                delay(refreshRate)
             }
         }
         job = Job(scope)
     }
     private fun onCompleteListener() {
         setOnCompletionListener {
-            refresh()
+
             when (state.value) {
                 Loop.NULL -> {
-
+                    if (!playlist.complete())
+                        skipNext()
                 }
                 Loop.CURRENT -> {
                     start()
@@ -162,7 +174,12 @@ class MediaPlayerX : MediaPlayer() {
                     skipNext()
                 }
             }
+            refresh()
         }
     }
 
+    override fun release() {
+        super.release()
+        job.cancel()
+    }
 }

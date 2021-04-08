@@ -73,6 +73,10 @@ class Playlist(private var name: String) : Serializable {
 
     fun toPlaylistEntity(): PlaylistEntity = PlaylistEntity(id, name, songs)
     fun getCount() = songs.size
+    fun complete() = songs.size == cur + 1
+    fun setIndex(index: Int) {
+        cur = index
+    }
 
 
     companion object {

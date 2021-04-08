@@ -14,10 +14,8 @@ import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.nourtech.wordpress.runwithmusic.R
 import com.nourtech.wordpress.runwithmusic.dialogs.Dialogs
-import com.nourtech.wordpress.runwithmusic.others.Constants
 import com.nourtech.wordpress.runwithmusic.others.Constants.ACTION_SET_SONG
 import com.nourtech.wordpress.runwithmusic.others.Constants.SEND_CURRENT_SONG
-import com.nourtech.wordpress.runwithmusic.others.Playlist
 import com.nourtech.wordpress.runwithmusic.others.Song
 import com.nourtech.wordpress.runwithmusic.services.TrackingService
 import com.nourtech.wordpress.runwithmusic.ui.viewmodels.MusicViewModel
@@ -33,8 +31,6 @@ class MusicListAdapter(
 ) : RecyclerView.Adapter<MusicListAdapter.MusicViewHolder>() {
 
     private lateinit var context: Context
-    private var playlist = Playlist("unnamed")
-    private val allList = list
 
     class MusicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewTitle: TextView = itemView.findViewById(R.id.tv_Title)
@@ -54,11 +50,10 @@ class MusicListAdapter(
         holder.textViewArtist.text = list[position].artist
 
         holder.itemView.setOnClickListener {
-            sendCommandToService(ACTION_SET_SONG, list[position])
+            sendCommandToService(list[position])
             findNavController(fragment).navigate(R.id.action_musicFragment_to_playerFragment)
         }
         holder.itemView.setOnLongClickListener {
-            playlist.add(list[position])
             showMenu(it, list[position])
             true
         }
@@ -66,17 +61,6 @@ class MusicListAdapter(
     }
 
     override fun getItemCount(): Int = list.size
-
-    fun switchToPlayList() {
-        list = playlist.getAll()
-        notifyDataSetChanged()
-    }
-
-    fun switchToAllList() {
-        list = allList
-        notifyDataSetChanged()
-    }
-
 
     private fun showMenu(v: View, song: Song) {
         val popup = PopupMenu(context, v)
@@ -109,9 +93,9 @@ class MusicListAdapter(
         }
     }
 
-    private fun sendCommandToService(action: String, song: Song) =
+    private fun sendCommandToService(song: Song) =
             Intent(fragment.requireContext(), TrackingService::class.java).also {
-                it.action = action
+                it.action = ACTION_SET_SONG
                 it.putExtra(SEND_CURRENT_SONG, song)
                 fragment.requireContext().startService(it)
             }

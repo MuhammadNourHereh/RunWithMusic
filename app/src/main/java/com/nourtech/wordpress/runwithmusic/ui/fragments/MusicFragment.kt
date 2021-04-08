@@ -51,17 +51,6 @@ class MusicFragment: Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        binding.icPlaylist.setOnClickListener {
-            playList = if (playList) {
-                (binding.recyclerviewMusic.adapter as MusicListAdapter).switchToAllList()
-                binding.icPlaylist.setImageResource(R.drawable.ic_queue_music_48px)
-                false
-            } else {
-                (binding.recyclerviewMusic.adapter as MusicListAdapter).switchToPlayList()
-                binding.icPlaylist.setImageResource(R.drawable.ic_playlist_add_48px)
-                true
-            }
-        }
     }
 
     private fun getPermissions() {
